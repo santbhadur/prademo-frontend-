@@ -62,13 +62,13 @@ export default function SharePdf() {
   };
 
   return (
-    <div className="container mt-5 aliten-item justification-content">
+    <div className="container m-5 ">
       <div
         ref={contentRef}
-        className="container ml-5"
+        className="container  ml-5"
       >
         {/* Single Table */}
-        <table style={{ borderCollapse: "collapse", width: "80%" }}>
+        <table className="m" style={{ borderCollapse: "collapse", width: "80%" }}>
           <tbody>
             <tr>
               <td
@@ -172,7 +172,7 @@ export default function SharePdf() {
             {/* Signature */}
             <tr>
               <td colSpan="3" style={{ border: "1px solid black" }}>
-                <i>Thank you!</i>
+                
               </td>
               <td colSpan="2" style={{ textAlign: "center", border: "1px solid black" }}>
                 <p>Authorized Signatory</p>
@@ -181,17 +181,9 @@ export default function SharePdf() {
             </tr>
           </tbody>
         </table>
-
-        {/* Footer */}
-        <hr />
-        <p>
-          <b style={{ marginLeft: "5px" }}>Bank Details:</b> __________________________
-        </p>
-        <p>
-          <b style={{ marginLeft: "5px" }}>Terms & Conditions:</b> ____________________
-        </p>
+                <h4 className="text-center mt-3">Thank you</h4>
       </div>
-
+                
       <button className="btn btn-success mt-3" onClick={handleShare}>
         📤 Share / Download PDF
       </button>
