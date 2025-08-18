@@ -30,7 +30,7 @@ export default function Demo() {
 
   // ✅ Fetch next bill number from backend
   useEffect(() => {
-    fetch("http://localhost:5000/api/bills/next-bill")
+    fetch("https://prademo-bankend-uiiq.vercel.app/api/bills/next-bill")
       .then((res) => res.json())
       .then((data) => setBillNumber(data.nextBillNumber))
       .catch((err) => console.error("Error fetching bill number:", err));
@@ -80,7 +80,7 @@ export default function Demo() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/bills", {
+      const response = await fetch("https://prademo-bankend-uiiq.vercel.app/api/bills", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(billData),
@@ -96,7 +96,7 @@ export default function Demo() {
         setPhoneNumber("");
         setDiscountValue(0);
 
-        const res = await fetch("http://localhost:5000/api/bills/next-bill");
+        const res = await fetch("https://prademo-bankend-uiiq.vercel.app/api/bills/next-bill");
         const data = await res.json();
         setBillNumber(data.nextBillNumber);
       } else {
