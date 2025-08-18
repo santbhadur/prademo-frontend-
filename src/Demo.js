@@ -227,10 +227,10 @@ export default function Demo() {
 
         <div className="row mb-3">
           <div className="col-md-4">
-            <Form.Label className="fw-bold">Quantity</Form.Label>
+            <Form.Label className="fw-bold">Pcs</Form.Label>
             <Form.Control
               type="number"
-              placeholder="Qty"
+              placeholder="Pcs"
               value={qty}
               onChange={(e) => setQty(e.target.value)}
             />
@@ -266,8 +266,7 @@ export default function Demo() {
                 <tr>
                   <th>Item Name</th>
                   <th>Price</th>
-                  <th>Qty</th>
-                  <th>Unit</th>
+                  <th>Pcs</th>
                   <th>Total</th>
                 </tr>
               </thead>
@@ -277,7 +276,7 @@ export default function Demo() {
                     <td>{it.itemName}</td>
                     <td>{it.price}</td>
                     <td>{it.qty}</td>
-                    <td>{it.unit}</td>
+                    
                     <td>{(it.price * it.qty).toFixed(2)}</td>
                   </tr>
                 ))}

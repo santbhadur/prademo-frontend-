@@ -58,7 +58,7 @@ const Demo = () => {
 
         {/* Unit */}
         <Form.Group className="mb-3" controlId="formUnit">
-          <Form.Label>Unit</Form.Label>
+          <Form.Label>Pcs</Form.Label>
           <Form.Control
             type="text"
             placeholder="e.g., Kg, Piece"
