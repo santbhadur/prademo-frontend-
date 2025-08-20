@@ -65,16 +65,16 @@ export default function SharePdf() {
     <div className="container m-5 ">
       <div
         ref={contentRef}
-        className="container  ml-5"
+        
       >
         {/* Single Table */}
-        <table className="m" style={{ borderCollapse: "collapse", width: "80%" }}>
+        <table className="" style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
             <tr>
               <td
                 colSpan="6"
               style={{ border: "1px solid black", padding: "10px" }}>
-                <h6 className="text-center">Invoice</h6>
+                <h4 className="text-center">Invoice</h4>
               <div style={{ display: "flex", alignItems: "center" }}>
               
                 <img
@@ -96,9 +96,9 @@ export default function SharePdf() {
             </tr>
             <tr>
             <td className="mb-0" colSpan="3" style={{ border: "1px solid black", paddingLeft: "8px" }}>
-                Bill Details
+               <h6> Bill Details </h6>
             </td>
-            <td className="mb-0" colSpan="3" style={{ border: "1px solid black", paddingLeft: "8px" }}>Bill to</td>
+            <td className="mb-0" colSpan="3" style={{ border: "1px solid black", paddingLeft: "8px" }}><h6>Bill to</h6></td>
         </tr>
         <tr>
             <td colSpan="3" style={{ border: "1px solid black", padding: "8px" }}>
@@ -119,23 +119,23 @@ export default function SharePdf() {
 
             {/* Item Headers */}
             <tr>
-              <th style={{ border: "1px solid black" }}>No</th>
-              <th style={{ border: "1px solid black" }}>Item Name</th>
-              <th style={{ border: "1px solid black" }}>Qty</th>
-              <th style={{ border: "1px solid black" }}>Rate</th>
-              <th style={{ border: "1px solid black" }}>Amount</th>
+              <th style={{ border: "1px solid black", paddingLeft: "8px" }}>No</th>
+              <th style={{ border: "1px solid black", paddingLeft: "8px" }}>Item Name</th>
+              <th style={{ border: "1px solid black", paddingLeft: "8px" }}>Qty</th>
+              <th style={{ border: "1px solid black", paddingLeft: "8px"  }}>Rate</th>
+              <th style={{ border: "1px solid black", paddingLeft: "8px" }}>Amount</th>
             </tr>
 
             {/* Item Rows */}
             {billData.items.map((it, idx) => (
               <tr key={idx}>
-                <td style={{ border: "1px solid black" }}>{idx + 1}</td>
-                <td style={{ border: "1px solid black" }}>{it.itemName}</td>
-                <td style={{ border: "1px solid black" }}>
+                <td style={{ border: "1px solid black", paddingLeft: "8px" }}>{idx + 1}</td>
+                <td style={{ border: "1px solid black", paddingLeft: "8px" }}>{it.itemName}</td>
+                <td style={{ border: "1px solid black", paddingLeft: "8px" }}>
                   {it.qty} {it.unit}
                 </td>
-                <td style={{ border: "1px solid black" }}>₹{it.price}</td>
-                <td style={{ border: "1px solid black" }}>
+                <td style={{ border: "1px solid black", paddingLeft: "8px" }}>₹{it.price}</td>
+                <td style={{ border: "1px solid black", paddingLeft: "8px" }}>
                   ₹{(it.price * it.qty).toFixed(2)}
                 </td>
               </tr>
@@ -144,15 +144,15 @@ export default function SharePdf() {
             {/* Totals */}
             <tr>
               <td colSpan="4" style={{ textAlign: "right", border: "1px solid black" }}>
-                <b style={{ marginLeft: "5px" }}>Sub Total:</b>
+                <b style={{ marginLeft: "5px", paddingLeft: "8px" }}>Sub Total:</b>
               </td>
-              <td style={{ border: "1px solid black" }}>₹{billData.subtotal}</td>
+              <td style={{ border: "1px solid black", paddingLeft: "8px" }}>₹{billData.subtotal}</td>
             </tr>
             <tr>
-              <td colSpan="4" style={{ textAlign: "right", border: "1px solid black" }}>
-                <b style={{ marginLeft: "5px" }}>Discount:</b>
+              <td colSpan="4" style={{ textAlign: "right", border: "1px solid black", paddingLeft: "8px" }}>
+                <b style={{ marginLeft: "5px", paddingLeft: "8px" }}>Discount:</b>
               </td>
-              <td style={{ border: "1px solid black" }}>
+              <td style={{ border: "1px solid black", paddingLeft: "8px" }}>
                 ₹{billData.discountAmount} (
                 {billData.discountType === "percent"
                   ? `${billData.discountValue}%`
@@ -162,9 +162,9 @@ export default function SharePdf() {
             </tr>
             <tr>
               <td colSpan="4" style={{ textAlign: "right", border: "1px solid black" }}>
-                <b style={{ marginLeft: "5px" }}>TOTAL AMOUNT:</b>
+                <b style={{ marginLeft: "5px", paddingLeft: "8px" }}>TOTAL AMOUNT:</b>
               </td>
-              <td style={{ border: "1px solid black" }}>
+              <td style={{ border: "1px solid black", paddingLeft: "8px" }}>
                 <b>₹{billData.grandTotal}</b>
               </td>
             </tr>
