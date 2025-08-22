@@ -1,28 +1,72 @@
-body{
+body {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
-.label{
-  margin-right: 0%;
-}
-.input {
-  width:50px;
-  margin-right:190px;
-  margin-left:1%;
-}
-.date{
-  width:250px;
-  height:2%;
 
+.div1 {
+  height: 12vh;
+  background-color: antiquewhite;
+  display: flex;
+  align-items: center;
 }
-.name{
-  width:20px;
-  height:20px;
+
+.content {
+  display: flex;
+  height: 88vh;
 }
-.ml{
-  margin-left:10px;
-  margin-right:50px;
-  border:1px solid black;
+
+.div2 {
+  width: 18%;
+  background-color: rgb(196, 134, 52);
 }
-.m{
-  margin-left:100px;
+
+.main {
+  flex: 1;
+  background-color: #4a7ccc;
+  padding: 20px;
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.searchBar {
+  width: 300px;
+  padding: 8px 12px;
+  margin: 20px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.tableContainer {
+  max-height: 400px; /* ~8 rows height */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.infoTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  color: black;
+}
+
+.infoTable th,
+.infoTable td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.infoTable th {
+  background-color: #0b57d0;
+  color: white;
+  position: sticky;
+  top: 0; /* keeps header fixed */
+  z-index: 2;
+}
+
+.infoTable tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
