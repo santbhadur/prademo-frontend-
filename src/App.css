@@ -1,6 +1,8 @@
-body {
+body, * {
+  font-family: 'Poppins', sans-serif;
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .div1 {
@@ -13,22 +15,91 @@ body {
 .content {
   display: flex;
   height: 88vh;
+  background-color:#0b57d0;
 }
 
 .div2 {
   width: 18%;
   background-color: rgb(196, 134, 52);
 }
+.div3 {
+  width: 50%;
+  margin:5%;
+  background-color:aquamarine;
+}
 
 .main {
-  flex: 1;
+  
   background-color: #4a7ccc;
-  padding: 20px;
+  padding: 0px;
   color: white;
   display: flex;
   justify-content: flex-start;
 }
+.test {
+  position:absolute;
+  top:10%;
+  left:14%;
+}
+.test1 {
+  position:absolute;
+  top:10%;
+  left:14%;
+}
+/* Navbar Styling */
+.custom-navbar {
+  background-color: #0b57d0; /* Royal Blue */
+  padding: 10px 20px;
+}
 
+/* Sidebar */
+.custom-sidebar {
+  background-color: #f9f9f9;
+  padding: 15px;
+}
+
+.sidebar-title {
+  color: #5e35b1; /* Deep Purple */
+  font-weight: bold;
+}
+
+/* Sidebar Links */
+.sidebar-links .sidebar-link {
+  display: block;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #212121; /* Dark Gray */
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+.sidebar-links .sidebar-link:hover {
+  background-color: #e0e0e0;
+  color: #0b57d0;
+  font-weight: 600;
+}
+
+/* Active Link */
+.sidebar-links .active {
+  background-color: #5e35b1; /* Purple highlight */
+  color: #fff !important;
+  font-weight: bold;
+}
+
+/* Settings Special Link */
+.sidebar-links .settings-link.active {
+  background-color: #fbc02d; /* Golden Yellow */
+  color: #212121 !important;
+}
+
+.text{
+  font-size:30px;
+}
+.bill{
+  margin-left:50px;
+}
 .searchBar {
   width: 300px;
   padding: 8px 12px;
@@ -37,6 +108,61 @@ body {
   border: 1px solid #ccc;
   font-size: 14px;
 }
+/* Sidebar & Menu Responsiveness */
+
+/* Default: Desktop */
+.menu-btn {
+  display: none;
+}
+
+.div2 {
+  min-width: 200px;
+  background: #333;
+  color: white;
+  height: 100vh;
+  transition: transform 0.3s ease-in-out;
+}
+
+.main {
+  margin-left: 200px;
+  padding: 20px;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+  body{
+    margin:0;
+    padding:0;
+  }
+  .test {
+  position:absolute;
+  top:10%;
+  left:0%;
+  margin:10%;
+}
+.bill{
+  font-size:20px
+}
+.test1 {
+  position:absolute;
+  top:10%;
+  left:0%;
+  
+}
+}
+@media (max-width: 460px) {
+
+.text{
+  font-size:12px;
+  font-weight:bold;
+}
+.Details
+{
+  font-size:14px;
+  font-weight:bold;
+}
+}
+
 
 .tableContainer {
   max-height: 400px; /* ~8 rows height */

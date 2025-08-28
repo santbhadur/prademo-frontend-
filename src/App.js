@@ -11,6 +11,15 @@ import CreateGstBill from './page/CreateGstBill';
 import GstPreview from './page/GstPreview';
 import Logo from './page/Logo';
 import Signature from './page/Signature';
+import Main from './page/Main';
+import Test from './Test';
+import Test2 from './page/Test2';
+import ViewBill from "./components/ViewBill";
+import EditBill from "./components/EditBill";
+import Table1 from './page/Table1';
+import GstViewBill from './components/GstViewBill';
+import ProductPage from "./ProductPage";
+
 
 function App() {
   return (
@@ -18,8 +27,15 @@ function App() {
       <Routes>
         {/* Correct way: element expects a JSX component */}
         <Route path="/" element={<Table />} />
-        <Route path="/Logo" element={<Logo />} />
+        <Route path="/All-Gst-Bills" element={<Table1 />} />
+        <Route path="/view-bill/:id" element={<ViewBill />} />
+        <Route path="/view-bills/:id" element={<GstViewBill />} />
+        <Route path="/edit-bill/:id" element={<EditBill />} />
+        <Route path="/Create-Gst-Bill" element={<Test2 />} />
+        <Route path="/Sample-Bill" element={<Test />} />
+        <Route path="/Add-Logo" element={<Logo />} />
         <Route path="/Signature" element={<Signature />} />
+        <Route path="/Main" element={<Main />} />
         <Route path="/CreateGstBill" element={<CreateGstBill />} />
         <Route path='/GstPreview' element={<GstPreview /> } />
         <Route path="/Reports" element={<Reports />} />
@@ -28,6 +44,7 @@ function App() {
         <Route path="/demos" element={<Demos />} />
         <Route path="/create-bill" element={<CreateBill />} />
         <Route path="/share-pdf" element={<SharePdf />} />
+        <Route path="/products" element={<ProductPage />} />
         
       </Routes>
     </>

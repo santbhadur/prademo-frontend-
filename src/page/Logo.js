@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+import Main from "../page/Main";
 
 export default function Logo() {
   const fileInputRef = useRef(null);
@@ -59,8 +60,10 @@ export default function Logo() {
   };
 
   return (
-    <div className="container w-50 mt-5">
-      <h1 className="mb-3">Upload Logo</h1>
+     <>
+          <Main />
+          <div className="container test m-2">
+      <h1 className="mb-3 text-primary fw-bold">Upload Logo</h1>
       <Form onSubmit={handleUpload}>
         <Form.Group controlId="formFile" className="mb-3">
           <Form.Label>Select Logo</Form.Label>
@@ -94,5 +97,6 @@ export default function Logo() {
         </div>
       )}
     </div>
+    </>
   );
 }

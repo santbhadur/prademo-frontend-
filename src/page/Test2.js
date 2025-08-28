@@ -8,8 +8,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
+import Main from "../page/Main";
 
-export default function CreateGstBill() {
+export default function Test2() {
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -37,33 +38,25 @@ export default function CreateGstBill() {
       .catch((err) => console.error("Error fetching bill number:", err));
   }, []);
 
-const pickContact = async () => {
-  try {
-    if (navigator.contacts && navigator.contacts.select) {
-      // ✅ Contact Picker API supported (Mobile Chrome / Android)
-      const contacts = await navigator.contacts.select(
-        ["name", "tel"],
-        { multiple: false }
-      );
-
-      if (contacts.length > 0) {
-        const contact = contacts[0];
-        if (contact.name?.length > 0) {
-          setCustomerName(contact.name[0]);
+  const pickContact = async () => {
+    try {
+      if ("contacts" in navigator && "select" in navigator.contacts) {
+        const contacts = await navigator.contacts.select(["name", "tel"], {
+          multiple: false,
+        });
+        if (contacts.length > 0) {
+          const contact = contacts[0];
+          if (contact.name?.length > 0) setCustomerName(contact.name[0]);
+          if (contact.tel?.length > 0) setPhoneNumber(contact.tel[0]);
         }
-        if (contact.tel?.length > 0) {
-          setPhoneNumber(contact.tel[0]);
-        }
+      } else {
+        alert("Contact Picker API not supported in this browser.");
       }
-    } else {
-      // ❌ Desktop browsers me support nahi hoga
-      alert("Contact Picker API is not supported on this browser.\nPlease enter manually.");
+    } catch (error) {
+      console.error("Error picking contact:", error);
     }
-  } catch (error) {
-    console.error("Error picking contact:", error);
-    alert("Failed to pick contact.");
-  }
-};
+  };
+
 
   // Add item
   const handleAddItem = () => {
@@ -138,12 +131,12 @@ if (gstType === "CGST/SGST") {
       grandTotal,
        cgstTotal,
       sgstTotal,
-  igstTotal,
+      igstTotal,
     };
 
     try {
       const res = await fetch(
-        "https://prademo-bankend.vercel.app/api/billss",
+        "http://localhost:5000/api/billss",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -164,20 +157,22 @@ if (gstType === "CGST/SGST") {
   };
 
   return (
-    <div className="container mt-5 ">
-      <h1>Create GST Bill</h1>
+    <>
+          <Main />
+    <div className="container test mt-3 p-3 shadow rounded bg-light">
+      <h5 className="mb-3 text-primary fw-bold">Create GST Bill</h5>
       <form onSubmit={handleSubmit}>
         {/* Bill Details */}
         <div className="row mb-3">
-          <div className="col-md-4">
+          <div className="col-md-4 ">
             <Form.Group>
-              <Form.Label>Bill Number</Form.Label>
+              <Form.Label className="fw-bold">Bill Number</Form.Label><br></br>
               <Form.Control type="number" value={billNumber} readOnly />
             </Form.Group>
           </div>
           <div className="col-md-4">
             <Form.Group>
-              <Form.Label>Bill Date</Form.Label>
+              <Form.Label className="fw-bold">Bill Date</Form.Label><br></br>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   format="DD/MM/YYYY"
@@ -191,7 +186,7 @@ if (gstType === "CGST/SGST") {
 
         {/* Customer */}
         <Form.Group className="mb-3">
-          <Form.Label>Customer Name</Form.Label>
+          <Form.Label className="fw-bold">Customer Name</Form.Label>
           <InputGroup>
             <Form.Control
               type="text"
@@ -199,18 +194,15 @@ if (gstType === "CGST/SGST") {
               onChange={(e) => setCustomerName(e.target.value)}
             />
             <InputGroup.Text
-  onClick={pickContact}
-  style={{ cursor: "pointer" }}
-  title="Pick contact"
->
-  <PersonFill />
-</InputGroup.Text>
-
+            onClick={pickContact}
+                    style={{ cursor: "pointer" }}>
+              <PersonFill />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Customer Mobile</Form.Label>
+          <Form.Label className="fw-bold">Customer Mobile</Form.Label>
           <InputGroup>
             <Form.Control
               type="tel"
@@ -223,7 +215,7 @@ if (gstType === "CGST/SGST") {
           </InputGroup>
         </Form.Group>
         <div className="col-md-4">
-            <Form.Label>GST Type</Form.Label>
+            <Form.Label className="fw-bold">GST Type</Form.Label>
             <Form.Select value={gstType} onChange={(e) => setGstType(e.target.value)}>
             <option value="CGST/SGST">CGST/SGST (Local customer)</option>
             <option value="IGST">IGST (Central/outstation customer)</option>
@@ -234,14 +226,14 @@ if (gstType === "CGST/SGST") {
         <h5 className="mt-4">Add Items</h5>
         <div className="row mb-3">
           <div className="col-md-3">
-            <Form.Label>Item Name</Form.Label>
+            <Form.Label className="fw-bold">Item Name</Form.Label>
             <Form.Control
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
             />
           </div>
           <div className="col-md-2">
-            <Form.Label>Price</Form.Label>
+            <Form.Label className="fw-bold">Price</Form.Label>
             <Form.Control
               type="number"
               value={price}
@@ -249,7 +241,7 @@ if (gstType === "CGST/SGST") {
             />
           </div>
           <div className="col-md-2">
-            <Form.Label>Qty</Form.Label>
+            <Form.Label className="fw-bold">Qty</Form.Label>
             <Form.Control
               type="number"
               value={qty}
@@ -257,7 +249,7 @@ if (gstType === "CGST/SGST") {
             />
           </div>
           <div className="col-md-2">
-            <Form.Label>Unit</Form.Label>
+            <Form.Label className="fw-bold">Unit</Form.Label>
             <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
               <option value="">Select Unit</option>
               <option value="gram">Gram</option>
@@ -266,7 +258,7 @@ if (gstType === "CGST/SGST") {
             </Form.Select>
           </div>
           <div className="col-md-2">
-            <Form.Label>GST %</Form.Label>
+            <Form.Label className="fw-bold">GST %</Form.Label>
             <Form.Select value={gst} onChange={(e) => setGst(e.target.value)}>
               <option value="">--Select GST--</option>
               <option value="5">5%</option>
@@ -321,15 +313,41 @@ if (gstType === "CGST/SGST") {
             <h5 className="fw-bold text-success">
               Grand Total: ₹{grandTotal.toFixed(2)}
             </h5>
-          </>
-        )}
-
-        <div>
+            <div className="row mt-2">
+            <div className="col-sm-6">
+              <Form.Select
+                value={discountType}
+                onChange={(e) => setDiscountType(e.target.value)}
+              >
+                <option value="percent">Discount %</option>
+                
+              </Form.Select>  
+            </div>
+            <div className="col-sm-6">
+              <Form.Control
+                type="number"
+                placeholder="Enter Discount"
+                value={discountValue}
+                onChange={(e) => setDiscountValue(e.target.value)}
+              />
+            </div>
+          </div>
+          <h6 className="mt-2">Discount: ₹{discountAmount.toFixed(2)}</h6>
+          <h5 className="fw-bold text-success">
+            Grand Total: ₹{grandTotal.toFixed(2)}
+          </h5>
+        
+             <div>
           <button type="submit" className="btn btn-primary mt-3">
             Submit
           </button>
         </div>
+          </>
+        )}
+
+       
       </form>
     </div>
+    </>
   );
 }

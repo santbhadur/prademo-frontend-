@@ -3,28 +3,27 @@ import html2pdf from "html2pdf.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios"; // <-- axios import
 import defaultLogo from "../Images/logo.png"; // <-- fallback logo import
+import Main from "../page/Main";
 
 export default function GstPreview() {
   const contentRef = useRef();
   const location = useLocation();
   const navigate = useNavigate();
   const billData = location.state?.billData;
-  const [companyLogo, setCompanyLogo] = useState(defaultLogo);
+   const [logoUrl, setLogoUrl] = useState("");
+ 
+      useEffect(() => {
+         fetch("http://localhost:5000/api/logo")
+           .then((res) => res.json())
+           .then((data) => {
+             if (data.filePath) {
+               setLogoUrl("http://localhost:5000" + data.filePath);
+             }
+           })
+           .catch((err) => console.error("Error fetching logo:", err));
+       }, []);
 
-  // ✅ Backend se logo fetch
-  useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/logo");
-        if (res.data.filePath) {
-          setCompanyLogo(`http://localhost:5000${res.data.filePath}`);
-        }
-      } catch (err) {
-        console.log("No uploaded logo, using default.");
-      }
-    };
-    fetchLogo();
-  }, []);
+
 
   if (!billData) {
     return (
@@ -115,7 +114,9 @@ export default function GstPreview() {
   };
 
   return (
-    <div className="container m-5">
+    <>
+              <Main />
+    <div className="container test m-2">
       <div ref={contentRef}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
@@ -124,7 +125,7 @@ export default function GstPreview() {
               <td colSpan="10" style={{ border: "1px solid black", padding: "10px" }}>
                 <h4 className="text-center">Invoice</h4>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <img src={companyLogo || defaultLogo}  alt="Company Logo" style={{ height:"80px", marginRight: "10px"}} />
+                  <img src={ logoUrl}  alt="Company Logo" style={{ height:"80px", marginRight: "10px"}} />
 
 
                   <div style={{ fontSize: "14px" }}>
@@ -207,15 +208,15 @@ export default function GstPreview() {
                   </td>
                   {billData.gstType === "CGST/SGST" ? (
                     <>
-                      <td style={{ border: "1px solid black", padding: "8px" }}>₹{sgst}</td>
-                      <td style={{ border: "1px solid black", padding: "8px" }}>₹{cgst}</td>
+                      <td style={{ border: "1px solid black", padding: "8px" }}>₹ {sgst}</td>
+                      <td style={{ border: "1px solid black", padding: "8px" }}>₹ {cgst}</td>
                     </>
                   ) : (
                     <td colSpan="2" style={{ border: "1px solid black", padding: "8px" }}>
-                      ₹{igst}
+                      ₹{Number(igst).toFixed(2)}
                     </td>
                   )}
-                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.total}</td>
+                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.total.toFixed(2)}</td>
                 </tr>
               );
             })}
@@ -225,7 +226,7 @@ export default function GstPreview() {
               <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
                 <b>Sub Total:</b>
               </td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.subtotal}</td>
+              <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.subtotal.toFixed(2)}</td>
             </tr>
 
            {billData.gstType === "CGST/SGST" ? (
@@ -234,13 +235,13 @@ export default function GstPreview() {
       <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
         <b>CGST:</b>
       </td>
-      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.cgstTotal}</td>
+      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.cgstTotal.toFixed(2)}</td>
     </tr>
     <tr>
       <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
         <b>SGST:</b>
       </td>
-      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.sgstTotal}</td>
+      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.sgstTotal.toFixed(2)}</td>
     </tr>
   </>
 ) : (
@@ -248,7 +249,7 @@ export default function GstPreview() {
     <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
       <b>IGST:</b>
     </td>
-    <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.igstTotal}</td>
+    <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.igstTotal.toFixed(2)}</td>
   </tr>
 )}
 
@@ -266,7 +267,7 @@ export default function GstPreview() {
                 <b>TOTAL AMOUNT:</b>
               </td>
               <td style={{ border: "1px solid black", padding: "8px" }}>
-                <b>₹{billData.grandTotal}</b>
+                <b>₹{billData.grandTotal.toFixed(2)}</b>
               </td>
             </tr>
 
@@ -294,5 +295,6 @@ export default function GstPreview() {
         ⬇️ Download
       </button>
     </div>
+    </>
   );
 }

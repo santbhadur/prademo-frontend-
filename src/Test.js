@@ -1,4 +1,3 @@
-// src/page/Demo.js
 import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -8,11 +7,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
-import "./App.css";
+
 import Main from "./page/Main";
 
-export default function Demo() {
+export default function Test() {
   const navigate = useNavigate();
+
+  // customer states
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [value, setValue] = useState(dayjs());
@@ -26,7 +27,7 @@ export default function Demo() {
   const [items, setItems] = useState([]);
 
   // discount states
-  const [discountType, setDiscountType] = useState("percent"); // ✅ FIXED
+  const [discountType, setDiscountType] = useState("percent");
   const [discountValue, setDiscountValue] = useState(0);
 
   // ✅ Fetch next bill number
@@ -37,6 +38,7 @@ export default function Demo() {
       .catch((err) => console.error("Error fetching bill number:", err));
   }, []);
 
+  // Contact Picker API
   const pickContact = async () => {
     try {
       if ("contacts" in navigator && "select" in navigator.contacts) {
@@ -56,18 +58,39 @@ export default function Demo() {
     }
   };
 
+  // Items Add
+  const handleAddItem = () => {
+    if (!itemName || !price || !qty || !unit) {
+      alert("⚠️ Please fill all item fields");
+      return;
+    }
+    const newItem = {
+      itemName,
+      price: parseFloat(price),
+      qty: parseFloat(qty),
+      unit,
+    };
+    setItems([...items, newItem]);
+
+    // reset inputs
+    setItemName("");
+    setPrice("");
+    setQty("");
+    setUnit("");
+  };
+
+  // ✅ Totals calculation
+  const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
+  let discountAmount =
+    discountType === "percent"
+      ? (subtotal * discountValue) / 100
+      : discountValue;
+  if (discountAmount > subtotal) discountAmount = subtotal;
+  const grandTotal = subtotal - discountAmount;
+
+  // Submit Bill
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
-
-    let discountAmount =
-      discountType === "percent"
-        ? (subtotal * discountValue) / 100
-        : discountValue;
-
-    if (discountAmount > subtotal) discountAmount = subtotal;
-    const grandTotal = subtotal - discountAmount;
 
     const billData = {
       billNumber,
@@ -83,14 +106,17 @@ export default function Demo() {
     };
 
     try {
-      const response = await fetch("https://prademo-bankend.vercel.app/api/bills", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(billData),
-      });
+      const response = await fetch(
+        "https://prademo-bankend.vercel.app/api/bills",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(billData),
+        }
+      );
 
       if (response.ok) {
-        alert("Bill saved successfully!");
+        alert("✅ Bill saved successfully!");
         navigate("/share-pdf", { state: { billData } });
 
         // reset
@@ -99,63 +125,35 @@ export default function Demo() {
         setPhoneNumber("");
         setDiscountValue(0);
 
-        const res = await fetch("https://prademo-bankend.vercel.app/api/bills/next-bill");
+        const res = await fetch(
+          "https://prademo-bankend.vercel.app/api/bills/next-bills"
+        );
         const data = await res.json();
         setBillNumber(data.nextBillNumber);
       } else {
-        alert("Error saving bill");
+        alert("❌ Error saving bill");
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  const handleAddItem = () => {
-    if (!itemName || !price || !qty || !unit) {
-      alert("Please fill all item fields");
-      return;
-    }
-    const newItem = {
-      itemName,
-      price: parseFloat(price),
-      qty: parseFloat(qty),
-      unit,
-    };
-    setItems([...items, newItem]);
-
-    setItemName("");
-    setPrice("");
-    setQty("");
-    setUnit("");
-  };
-
-  // subtotal, discount & total calculation
-  const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
-
-  let discountAmount =
-    discountType === "percent"
-      ? (subtotal * discountValue) / 100
-      : discountValue;
-
-  if (discountAmount > subtotal) discountAmount = subtotal;
-  const grandTotal = subtotal - discountAmount;
-
   return (
     <>
       <Main />
-      <div className="container test mt-2">
-        <h5>Create Bill</h5>
+      <div className="container test mt-3 p-3 shadow rounded bg-light">
+        <h4 className="mb-3 text-primary fw-bold">🧾 Create Bill</h4>
         <form onSubmit={handleSubmit}>
           {/* Bill fields */}
           <div className="row mb-3">
             <div className="col-sm-6">
-              <Form.Group>
+              <Form.Group controlId="formBillNumber">
                 <Form.Label className="fw-bold">Bill Number</Form.Label>
                 <Form.Control type="number" value={billNumber} readOnly />
               </Form.Group>
             </div>
             <div className="col-sm-6">
-              <Form.Group>
+              <Form.Group controlId="formBillDate">
                 <Form.Label className="fw-bold">Bill Date</Form.Label>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -214,7 +212,7 @@ export default function Demo() {
           </div>
 
           {/* Items Section */}
-          <h5 className="mt-4">Add Items</h5>
+          <h5 className="mt-4 text-secondary">➕ Add Items</h5>
           <div className="row mb-3">
             <div className="col-sm-6">
               <Form.Label className="fw-bold">Item Name</Form.Label>
@@ -266,7 +264,7 @@ export default function Demo() {
           {items.length > 0 && (
             <>
               <table className="table table-bordered mt-3">
-                <thead>
+                <thead className="table-secondary">
                   <tr>
                     <th>Item Name</th>
                     <th>Price</th>
@@ -278,9 +276,9 @@ export default function Demo() {
                   {items.map((it, index) => (
                     <tr key={index}>
                       <td>{it.itemName}</td>
-                      <td>{it.price}</td>
+                      <td>₹{it.price}</td>
                       <td>{it.qty}</td>
-                      <td>{(it.price * it.qty).toFixed(2)}</td>
+                      <td>₹{(it.price * it.qty).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

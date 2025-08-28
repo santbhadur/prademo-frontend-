@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function Table() {
+export default function Table1() {
   const [search, setSearch] = useState("");
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,9 +15,10 @@ export default function Table() {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await fetch("https://prademo-bankend.vercel.app/api/bills");
+        const response = await fetch("https://prademo-bankend.vercel.app/api/billss");
         const data = await response.json();
         setBills(data);
+        console.log(data);
       } catch (err) {
         console.error("Error fetching bills:", err);
       } finally {
@@ -40,11 +41,10 @@ export default function Table() {
     if (!window.confirm("Are you sure you want to delete this bill?")) return;
 
     try {
-      await fetch(`https://prademo-bankend.vercel.app/api/bills/${id}`, {
+      await fetch(`https://prademo-bankend.vercel.app/api/billss/${id}`, {
         method: "DELETE",
       });
       setBills(bills.filter((bill) => bill._id !== id));
-      alert("delete successffull Dubey ji");
     } catch (err) {
       console.error("Error deleting bill:", err);
     }
@@ -63,8 +63,8 @@ export default function Table() {
               alignItems: "center",
             }}
           >
-            <h2 className="mb-3 text-primary fw-bold">All Bills</h2>
-            <Link to="/Sample-Bill">
+            <h2 className="mb-3 text-primary fw-bold">All GST Bills</h2>
+            <Link to="/Create-Gst-Bill">
               <button
                 style={{
                   backgroundColor: "#007bff",
@@ -117,7 +117,7 @@ export default function Table() {
                     <th>Subtotal</th>
                     <th>Discount</th>
                     <th>View</th>
-                    <th>Delete</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -128,8 +128,7 @@ export default function Table() {
                         <td>{new Date(bill.billDate).toLocaleDateString()}</td>
                         <td>{bill.customerName}</td>
                         <td>{bill.phoneNumber}</td>
-                        <td>₹{bill.subtotal ? bill.subtotal.toFixed(2) : "0.00"}</td>
-
+                        <td>₹{bill.subtotal}</td>
                         <td>
                           {bill.discountType === "percent"
                             ? `${bill.discountValue}%`
@@ -137,7 +136,7 @@ export default function Table() {
                         </td>
                         <td><button
                           className="btn btn-sm btn-info"
-                          onClick={() => navigate(`/view-bill/${bill._id}`)}
+                          onClick={() => navigate(`/view-bills/${bill._id}`)}
                         >
                           View
                         </button></td>
@@ -147,11 +146,8 @@ export default function Table() {
                             className="btn btn-sm btn-danger"
                             onClick={() => handleDelete(bill._id)}
                           >
-                            <Grid container sx={{ color: 'action' }}>
-
-                              <Grid size={8}>
-                                <DeleteIcon />
-                              </Grid>
+                            <Grid size={8}>
+                              <DeleteIcon />
                             </Grid>
 
                           </button>
