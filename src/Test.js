@@ -32,7 +32,7 @@ export default function Test() {
 
   // ✅ Fetch next bill number
   useEffect(() => {
-    fetch("https://prademo-bankend.vercel.app/api/bills/next-bill")
+    fetch("https://prademo-bankend-zojh.vercel.app/api/bills/next-bill")
       .then((res) => res.json())
       .then((data) => setBillNumber(data.nextBillNumber))
       .catch((err) => console.error("Error fetching bill number:", err));
@@ -107,7 +107,7 @@ export default function Test() {
 
     try {
       const response = await fetch(
-        "https://prademo-bankend.vercel.app/api/bills",
+        "https://prademo-bankend-zojh.vercel.app/api/bills",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -126,7 +126,7 @@ export default function Test() {
         setDiscountValue(0);
 
         const res = await fetch(
-          "https://prademo-bankend.vercel.app/api/bills/next-bills"
+          "https://prademo-bankend-zojh.vercel.app/api/bills/next-bills"
         );
         const data = await res.json();
         setBillNumber(data.nextBillNumber);

@@ -40,7 +40,7 @@ export default function Logo() {
     formData.append("logo", selectedFile);
 
     try {
-      const res = await axios.post("http://localhost:5000/upload", formData, {
+      const res = await axios.post("https://prademo-bankend-zojh.vercel.app/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

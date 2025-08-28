@@ -8,13 +8,13 @@ export default function EditBill() {
   const [bill, setBill] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/bills/${id}`)
+    fetch(`https://prademo-bankend-zojh.vercel.app/api/bills/${id}`)
       .then((res) => res.json())
       .then((data) => setBill(data));
   }, [id]);
 
   const handleUpdate = async () => {
-    await fetch(`http://localhost:5000/api/bills/${id}`, {
+    await fetch(`https://prademo-bankend-zojh.vercel.app/api/bills/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bill),

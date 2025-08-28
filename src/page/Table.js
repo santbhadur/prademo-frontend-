@@ -15,7 +15,7 @@ export default function Table() {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await fetch("https://prademo-bankend.vercel.app/api/bills");
+        const response = await fetch("https://prademo-bankend-zojh.vercel.app/api/bills");
         const data = await response.json();
         setBills(data);
       } catch (err) {
@@ -40,7 +40,7 @@ export default function Table() {
     if (!window.confirm("Are you sure you want to delete this bill?")) return;
 
     try {
-      await fetch(`https://prademo-bankend.vercel.app/api/bills/${id}`, {
+      await fetch(`https://prademo-bankend-zojh.vercel.app/api/bills/${id}`, {
         method: "DELETE",
       });
       setBills(bills.filter((bill) => bill._id !== id));

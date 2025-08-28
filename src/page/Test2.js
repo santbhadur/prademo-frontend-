@@ -32,7 +32,7 @@ export default function Test2() {
 
   // ✅ Fetch next GST bill number
   useEffect(() => {
-    fetch("https://prademo-bankend.vercel.app/api/bills/next-bills")
+    fetch("https://prademo-bankend-zojh.vercel.app/api/bills/next-bills")
       .then((res) => res.json())
       .then((data) => setBillNumber(data.nextBillNumber))
       .catch((err) => console.error("Error fetching bill number:", err));
@@ -136,7 +136,7 @@ if (gstType === "CGST/SGST") {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/billss",
+        "https://prademo-bankend-zojh.vercel.app/api/billss",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

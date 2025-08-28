@@ -11,7 +11,7 @@ export default function Main() {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/logo")
+    fetch("https://prademo-bankend-zojh.vercel.app/api/logo")
       .then((res) => res.json())
       .then((data) => {
         if (data.filePath) {

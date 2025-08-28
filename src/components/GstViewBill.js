@@ -9,11 +9,11 @@ export default function GstViewBill() {
   const [logoUrl, setLogoUrl] = useState("");
 
      useEffect(() => {
-          fetch("http://localhost:5000/api/logo")
+          fetch("https://prademo-bankend-zojh.vercel.app/api/logo")
             .then((res) => res.json())
             .then((data) => {
               if (data.filePath) {
-                setLogoUrl("http://localhost:5000" + data.filePath);
+                setLogoUrl("https://prademo-bankend-zojh.vercel.app/" + data.filePath);
               }
             })
             .catch((err) => console.error("Error fetching logo:", err));
@@ -32,7 +32,7 @@ export default function GstViewBill() {
   useEffect(() => {
     const fetchBill = async () => {
       try {
-        const res = await fetch(`https://prademo-bankend.vercel.app/api/billss/${id}`);
+        const res = await fetch(`https://prademo-bankend-zojh.vercel.app/api/billss/${id}`);
         const data = await res.json();
         setBill(data);
         console(data)
