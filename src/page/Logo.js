@@ -8,19 +8,21 @@ export default function Logo() {
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
-
+   const [logoUrl, setLogoUrl] = useState("");
   // ✅ Page load hone par latest logo fetch karo
-  useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        const res = await axios.get("https://prademo-bankend-zojh.vercel.app/api/logo");
-        setUploadedFile(res.data.filePath);
-      } catch (err) {
-        console.log("No logo found yet");
+
+    useEffect(() => {
+      fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("API Response:", data);  // ✅ ये डालकर देख
+      if (data.url) {
+        setLogoUrl(data.url);
       }
-    };
-    fetchLogo();
-  }, []);
+    })
+    .catch((err) => console.error("Error fetching logo:", err));
+  
+    }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -40,7 +42,7 @@ export default function Logo() {
     formData.append("logo", selectedFile);
 
     try {
-      const res = await axios.post("https://prademo-bankend-zojh.vercel.app/upload", formData, {
+      const res = await axios.post("https://prademo-bankend-x6ny.vercel.app/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -54,10 +56,7 @@ export default function Logo() {
     }
   };
 
-  const handleRemove = () => {
-    setUploadedFile(null);
-    fileInputRef.current.value = "";
-  };
+
 
   return (
      <>
@@ -78,24 +77,13 @@ export default function Logo() {
         </Button>
       </Form>
 
-      {uploadedFile && (
-        <div className="mt-3">
-          <h5>Uploaded Logo:</h5>
-          <img
-            src={`http://localhost:5000${uploadedFile}`}
-            alt="Uploaded Logo"
-            style={{
-              width: "200px",
-              height: "auto",
-              border: "1px solid #ccc",
-            }}
-          />
-          <br />
-          <Button variant="danger" className="mt-2" onClick={handleRemove}>
-            Remove Logo
-          </Button>
-        </div>
-      )}
+    <img
+      src={logoUrl}
+      alt="Company Logo"
+      style={{ width: "200px", display: "block", margin: "20px auto" }}
+    />
+      
+    
     </div>
     </>
   );

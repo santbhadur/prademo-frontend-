@@ -11,17 +11,18 @@ export default function SharePdf() {
   const billData = location.state?.billData;
 
   const [logoUrl, setLogoUrl] = useState("");
-  // ✅ Fetch logo from API (user uploaded one)
-    useEffect(() => {
-         fetch("https://prademo-bankend-zojh.vercel.app/api/logo")
-           .then((res) => res.json())
-           .then((data) => {
-             if (data.filePath) {
-               setLogoUrl("https://prademo-bankend-zojh.vercel.app/" + data.filePath);
-             }
-           })
-           .catch((err) => console.error("Error fetching logo:", err));
-       }, []);
+ useEffect(() => {
+       fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+     .then((res) => res.json())
+     .then((data) => {
+       console.log("API Response:", data);  // ✅ ये डालकर देख
+       if (data.url) {
+         setLogoUrl(data.url);
+       }
+     })
+     .catch((err) => console.error("Error fetching logo:", err));
+   
+     }, []);
 
   if (!billData) {
     return (

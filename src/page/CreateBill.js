@@ -4,14 +4,16 @@ export default function CreateBill() {
   const [logoUrl, setLogoUrl] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/logo")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.filePath) {
-          setLogoUrl("http://localhost:5000" + data.filePath);
-        }
-      })
-      .catch((err) => console.error("Error fetching logo:", err));
+    fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("API Response:", data);  // ✅ ये डालकर देख
+    if (data.url) {
+      setLogoUrl(data.url);
+    }
+  })
+  .catch((err) => console.error("Error fetching logo:", err));
+
   }, []);
 
   if (!logoUrl) {

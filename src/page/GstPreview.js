@@ -13,15 +13,17 @@ export default function GstPreview() {
    const [logoUrl, setLogoUrl] = useState("");
  
       useEffect(() => {
-         fetch("https://prademo-bankend-zojh.vercel.app/api/logo")
-           .then((res) => res.json())
-           .then((data) => {
-             if (data.filePath) {
-               setLogoUrl("https://prademo-bankend-zojh.vercel.app/" + data.filePath);
-             }
-           })
-           .catch((err) => console.error("Error fetching logo:", err));
-       }, []);
+            fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("API Response:", data);  // ✅ ये डालकर देख
+            if (data.url) {
+              setLogoUrl(data.url);
+            }
+          })
+          .catch((err) => console.error("Error fetching logo:", err));
+        
+          }, []);
 
 
 
