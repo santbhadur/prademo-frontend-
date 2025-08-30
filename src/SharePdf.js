@@ -45,6 +45,8 @@ export default function SharePdf() {
         filename: "BhagtiBhandar.pdf",
         image: { type: "jpeg", quality: 1 },
         html2canvas: { scale: 3 },
+        useCORS: true,     // ✅ Allow CORS images
+        allowTaint: true ,
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       };
 
@@ -92,6 +94,7 @@ export default function SharePdf() {
                       src={logoUrl}
                       alt="Company Logo"
                       style={{ height: 80, marginRight: "20px" }}
+                      crossOrigin="anonymous"
                       onError={(e) => (e.target.src = defaultLogo)} // fallback if error
                     />
                     <div style={{ fontSize: "14px" }}>
