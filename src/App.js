@@ -19,6 +19,7 @@ import EditBill from "./components/EditBill";
 import Table1 from './page/Table1';
 import GstViewBill from './components/GstViewBill';
 import ProductPage from "./ProductPage";
+import Loader from "./Loader";
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path='/GstPreview' element={<GstPreview /> } />
         <Route path="/Reports" element={<Reports />} />
         <Route path="/Sales" element={<Sales />} />
+        <Route path="/loader" element={<Loader />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/demos" element={<Demos />} />
         <Route path="/create-bill" element={<CreateBill />} />

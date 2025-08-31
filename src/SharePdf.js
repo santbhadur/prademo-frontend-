@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import Main from "./page/Main";
-import defaultLogo from "./Images/logo.png"; // ✅ Default image
+import defaultLogo from "./Images/logo1.jpeg"// ✅ Default image
 
 export default function SharePdf() {
   const contentRef = useRef();
@@ -91,7 +91,7 @@ export default function SharePdf() {
                   <div style={{ display: "flex", alignItems: "center" }}>
                     {/* ✅ User uploaded OR default logo */}
                     <img
-                      src={logoUrl}
+                      src={defaultLogo}
                       alt="Company Logo"
                       style={{ height: 80, marginRight: "20px" }}
                       crossOrigin="anonymous"

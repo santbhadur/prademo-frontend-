@@ -7,17 +7,18 @@ export default function ViewBill() {
   const { id } = useParams();
   const [bill, setBill] = useState(null);
   const [logoUrl, setLogoUrl] = useState("");
-
-     useEffect(() => {
-        fetch("https://prademo-bankend-zojh.vercel.app/api/logo")
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.filePath) {
-              setLogoUrl("https://prademo-bankend-zojh.vercel.app/" + data.filePath);
-            }
-          })
-          .catch((err) => console.error("Error fetching logo:", err));
-      }, []);
+ useEffect(() => {
+       fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+     .then((res) => res.json())
+     .then((data) => {
+       console.log("API Response:", data);  // ✅ ये डालकर देख
+       if (data.url) {
+         setLogoUrl(data.url);
+       }
+     })
+     .catch((err) => console.error("Error fetching logo:", err));
+   
+     }, []);
 
   useEffect(() => {
     const fetchBill = async () => {
@@ -142,7 +143,7 @@ export default function ViewBill() {
                     </td>
                     <td colSpan="2" style={{ textAlign: "center", border: "1px solid black" }}>
                       <p>Authorized Signatory</p>
-                      <img src={logo} alt="Signature" style={{ height: 60 }} />
+                      
                     </td>
                   </tr>
                 </tbody>

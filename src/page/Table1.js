@@ -128,7 +128,7 @@ export default function Table1() {
                         <td>{new Date(bill.billDate).toLocaleDateString()}</td>
                         <td>{bill.customerName}</td>
                         <td>{bill.phoneNumber}</td>
-                        <td>₹{bill.subtotal}</td>
+                        <td>₹{bill.subtotal.toFixed(2)}</td>
                         <td>
                           {bill.discountType === "percent"
                             ? `${bill.discountValue}%`

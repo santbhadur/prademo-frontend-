@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react"; // <-- useState & us
 import html2pdf from "html2pdf.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios"; // <-- axios import
-import defaultLogo from "../Images/logo.png"; // <-- fallback logo import
+import defaultLogo from "../Images/logo1.jpeg"; // <-- fallback logo import
 import Main from "../page/Main";
 
 export default function GstPreview() {
@@ -127,7 +127,7 @@ export default function GstPreview() {
               <td colSpan="10" style={{ border: "1px solid black", padding: "10px" }}>
                 <h4 className="text-center">Invoice</h4>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <img src={ logoUrl}  alt="Company Logo" style={{ height:"80px", marginRight: "10px"}} />
+                  <img src={ defaultLogo}  alt="Company Logo" style={{ height:"80px", marginRight: "10px"}} />
 
 
                   <div style={{ fontSize: "14px" }}>
@@ -260,7 +260,7 @@ export default function GstPreview() {
                 <b>Discount:</b>
               </td>
               <td style={{ border: "1px solid black", padding: "8px" }}>
-                ₹{billData.discountAmount} (
+                ₹{billData.discountAmount.toFixed(2)} (
                 {billData.discountType === "percent" ? `${billData.discountValue}%` : "Flat"})
               </td>
             </tr>
