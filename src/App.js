@@ -20,7 +20,7 @@ import Table1 from './page/Table1';
 import GstViewBill from './components/GstViewBill';
 import ProductPage from "./ProductPage";
 import Loader from "./Loader";
-
+import Setting from "./Setting";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
         <Route path="/view-bills/:id" element={<GstViewBill />} />
         <Route path="/edit-bill/:id" element={<EditBill />} />
         <Route path="/Create-Gst-Bill" element={<Test2 />} />
+        <Route path="/Setting" element={<Setting />} />
         <Route path="/Sample-Bill" element={<Test />} />
         <Route path="/Add-Logo" element={<Logo />} />
         <Route path="/Signature" element={<Signature />} />

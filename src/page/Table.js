@@ -114,8 +114,8 @@ export default function Table() {
                     <th>Date</th>
                     <th>Customer</th>
                     <th>Phone</th>
-                    <th>Subtotal</th>
-                    <th>Discount</th>
+                  
+                    <th>Edit</th>
                     <th>View</th>
                     <th>Delete</th>
                   </tr>
@@ -128,13 +128,13 @@ export default function Table() {
                         <td>{new Date(bill.billDate).toLocaleDateString()}</td>
                         <td>{bill.customerName}</td>
                         <td>{bill.phoneNumber}</td>
-                        <td>₹{bill.subtotal ? bill.subtotal.toFixed(2) : "0.00"}</td>
-
-                        <td>
-                          {bill.discountType === "percent"
-                            ? `${bill.discountValue}%`
-                            : `₹${bill.discountValue}`}
-                        </td>
+                        
+                        <td><button
+                          className="btn btn-sm btn-info"
+                          onClick={() => navigate(`/edit-bill/${bill._id}`)}
+                        >
+                          Edit
+                        </button></td>
                         <td><button
                           className="btn btn-sm btn-info"
                           onClick={() => navigate(`/view-bill/${bill._id}`)}

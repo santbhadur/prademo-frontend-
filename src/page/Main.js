@@ -1,30 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Container, Offcanvas, Nav } from "react-bootstrap";
-import "../App.css"; 
+import "../App.css";
 import Loader from "../Loader";
+import Switch from "@mui/material/Switch";
 
 export default function Main() {
   const [show, setShow] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
-  const [loading, setLoading] = useState(true); // ✅ new state
+  const [loading, setLoading] = useState(true);
+  const [checked, setChecked] = useState(false); 
+  const navigate = useNavigate();
+  const location = useLocation(); // ✅ current route lene ke liye
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const handleChange = (event) => {
+    const newChecked = event.target.checked;
+    setChecked(newChecked);
+
+    if (newChecked) {
+      navigate("/All-Gst-Bills"); 
+    } else {
+      navigate("/"); 
+    }
+  };
+
+  // ✅ Route ke hisaab se switch ki state sync karega
   useEffect(() => {
-    // API se logo fetch
+    if (location.pathname === "/All-Gst-Bills") {
+      setChecked(true);
+    } else {
+      setChecked(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
       .then((res) => res.json())
       .then((data) => {
-        console.log("API Response:", data);
         if (data.url) {
           setLogoUrl(data.url);
         }
       })
       .catch((err) => console.error("Error fetching logo:", err));
 
-    // ✅ Minimum 4 sec loader
     const timer = setTimeout(() => {
       setLoading(false);
     }, 4000);
@@ -33,7 +54,7 @@ export default function Main() {
   }, []);
 
   if (loading) {
-    return <Loader />; // ✅ Ab 4 sec tak loader dikhayega
+    return <Loader />;
   }
 
   return (
@@ -43,12 +64,11 @@ export default function Main() {
         <Container fluid>
           <div className="d-flex align-items-center">
             <img src={logoUrl} alt="Logo" style={{ height: "50px" }} />
-            <h4 className=" text mb-0 ms-2 text-white">
+            <h4 className="text mb-0 ms-2 text-white">
               Shree Bhagti Bhandar Gem Stone
             </h4>
           </div>
 
-          {/* Toggle button for mobile */}
           <button className="btn btn-light d-lg-none" onClick={handleShow}>
             ☰
           </button>
@@ -85,10 +105,15 @@ export default function Main() {
               </NavLink>
             </Nav.Item>
 
+            {/* ✅ Switch */}
             <Nav.Item className="mb-2">
-              <NavLink to="/settings" className="sidebar-link settings-link">
-                ⚙️ Settings
-              </NavLink>
+              <span>Non-GST</span>
+              <Switch
+                checked={checked}
+                onChange={handleChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+              <span>GST</span>
             </Nav.Item>
           </Nav>
         </Offcanvas.Body>
