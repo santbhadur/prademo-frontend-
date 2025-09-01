@@ -7,6 +7,12 @@ export default function EditBill() {
   const navigate = useNavigate();
   const [bill, setBill] = useState(null);
 
+  // ✅ Helper function (dot .00 sirf decimal ke liye)
+  const formatNumber = (num) => {
+    if (isNaN(num) || num === null) return "";
+    return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
+  };
+
   // 🔹 Fetch bill data
   useEffect(() => {
     const fetchBill = async () => {
@@ -14,7 +20,7 @@ export default function EditBill() {
         `https://prademo-bankend-zojh.vercel.app/api/bills/${id}`
       );
       const data = await res.json();
-      setBill(recalculate(data)); // initial calculation
+      setBill(recalculate(data)); // initial calculation with backend values
     };
     fetchBill();
   }, [id]);
@@ -27,25 +33,23 @@ export default function EditBill() {
       0
     );
 
-    let discountPercent = parseFloat(billData.discountPercent) || 0;
+    let discountValue = parseFloat(billData.discountValue) || 0;
     let discountAmount = parseFloat(billData.discountAmount) || 0;
 
     if (changedField === "percent") {
-      discountAmount = (subtotal * discountPercent) / 100;
+      discountAmount = (subtotal * discountValue) / 100;
     } else if (changedField === "amount") {
-      discountPercent = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
-    } else {
-      discountAmount = (subtotal * discountPercent) / 100;
+      discountValue = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
     }
 
     let grandTotal = subtotal - discountAmount;
 
     return {
       ...billData,
-      subtotal: subtotal.toFixed(2),
-      discountPercent: discountPercent.toFixed(2),
-      discountAmount: discountAmount.toFixed(2),
-      grandTotal: grandTotal.toFixed(2),
+      subtotal: formatNumber(subtotal),
+      discountValue: formatNumber(discountValue),
+      discountAmount: formatNumber(discountAmount),
+      grandTotal: formatNumber(grandTotal),
     };
   };
 
@@ -55,7 +59,7 @@ export default function EditBill() {
     setBill((prev) => {
       let updated = { ...prev, [name]: value };
       let changedField =
-        name === "discountPercent"
+        name === "discountValue"
           ? "percent"
           : name === "discountAmount"
           ? "amount"
@@ -76,7 +80,7 @@ export default function EditBill() {
     e.preventDefault();
     const payload = {
       ...bill,
-      discountPercent: parseFloat(bill.discountPercent),
+      discountValue: parseFloat(bill.discountValue),
       discountAmount: parseFloat(bill.discountAmount),
       subtotal: parseFloat(bill.subtotal),
       grandTotal: parseFloat(bill.grandTotal),
@@ -175,9 +179,8 @@ export default function EditBill() {
               <label>Discount (%)</label>
               <input
                 type="number"
-            
-                name="discountPercent"
-                value={bill.discountPercent}
+                name="discountValue"
+                value={bill.discountValue}
                 onChange={handleChange}
                 className="form-control"
               />
@@ -186,7 +189,6 @@ export default function EditBill() {
               <label>Discount Amount</label>
               <input
                 type="number"
-                
                 name="discountAmount"
                 value={bill.discountAmount}
                 onChange={handleChange}

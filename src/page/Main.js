@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { Navbar, Container, Offcanvas, Nav } from "react-bootstrap";
 import "../App.css";
 import Loader from "../Loader";
@@ -64,9 +64,12 @@ export default function Main() {
         <Container fluid>
           <div className="d-flex align-items-center">
             <img src={logoUrl} alt="Logo" style={{ height: "50px" }} />
-            <h4 className="text mb-0 ms-2 text-white">
-              Shree Bhagti Bhandar Gem Stone
-            </h4>
+            
+<h4 className="text mb-0 ms-2 text-white">
+  <Link to="/" className="text-white text-decoration-none">
+    Shree Bhagti Bhandar Gem Stone
+  </Link>
+</h4>
           </div>
 
           <button className="btn btn-light d-lg-none" onClick={handleShow}>

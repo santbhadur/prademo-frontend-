@@ -115,7 +115,7 @@ export default function Table1() {
                     <th>Customer</th>
                     <th>Phone</th>
                     <th>Subtotal</th>
-                    <th>Discount</th>
+                    <th>Edit</th>
                     <th>View</th>
                     <th>Actions</th>
                   </tr>
@@ -129,11 +129,12 @@ export default function Table1() {
                         <td>{bill.customerName}</td>
                         <td>{bill.phoneNumber}</td>
                         <td>₹{bill.subtotal.toFixed(2)}</td>
-                        <td>
-                          {bill.discountType === "percent"
-                            ? `${bill.discountValue}%`
-                            : `₹${bill.discountValue}`}
-                        </td>
+                        <td><button
+                          className="btn btn-sm btn-info"
+                          onClick={() => navigate(`/edit-Gst-bill/${bill._id}`)}
+                        >
+                          Edit
+                        </button></td>
                         <td><button
                           className="btn btn-sm btn-info"
                           onClick={() => navigate(`/view-bills/${bill._id}`)}

@@ -11,6 +11,12 @@ export default function GstPreview() {
   const billData = location.state?.billData;
   const [logoUrl, setLogoUrl] = useState("");
 
+  // 🔹 Helper Function to format numbers
+const formatNumber = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return "";
+  return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
+};
+
   useEffect(() => {
     fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
       .then((res) => res.json())
@@ -200,7 +206,7 @@ export default function GstPreview() {
                         {it.qty} {it.unit}
                       </td>
                       <td>₹{it.price}</td>
-                      <td>₹{(it.price * it.qty).toFixed(2)}</td>
+                      <td>₹{it.taxable?.toFixed(2)}</td>
                       {billData.gstType === "CGST/SGST" ? (
                         <>
                           <td>₹{sgst}</td>
@@ -209,7 +215,7 @@ export default function GstPreview() {
                       ) : (
                         <td colSpan="2">₹{Number(igst).toFixed(2)}</td>
                       )}
-                      <td>₹{it.total.toFixed(2)}</td>
+                      <td>₹{formatNumber(it.total)}</td>
                     </tr>
                   );
                 })}
@@ -219,7 +225,7 @@ export default function GstPreview() {
                   <td colSpan="8" className="text-end fw-bold">
                     Sub Total:
                   </td>
-                  <td>₹{billData.subtotal.toFixed(2)}</td>
+                  <td>₹{formatNumber(billData.subtotal)}</td>
                 </tr>
 
                 {billData.gstType === "CGST/SGST" ? (
@@ -228,13 +234,13 @@ export default function GstPreview() {
                       <td colSpan="8" className="text-end fw-bold">
                         CGST:
                       </td>
-                      <td>₹{billData.cgstTotal.toFixed(2)}</td>
+                      <td>₹{formatNumber(billData.cgstTotal)}</td>
                     </tr>
                     <tr>
                       <td colSpan="8" className="text-end fw-bold">
                         SGST:
                       </td>
-                      <td>₹{billData.sgstTotal.toFixed(2)}</td>
+                      <td>₹{formatNumber(billData.sgstTotal)}</td>
                     </tr>
                   </>
                 ) : (
@@ -242,7 +248,7 @@ export default function GstPreview() {
                     <td colSpan="8" className="text-end fw-bold">
                       IGST:
                     </td>
-                    <td>₹{billData.igstTotal.toFixed(2)}</td>
+                    <td>₹{formatNumber(billData.igstTotal)}</td>
                   </tr>
                 )}
 
@@ -251,9 +257,9 @@ export default function GstPreview() {
                     Discount:
                   </td>
                   <td>
-                    ₹{billData.discountAmount.toFixed(2)} (
-                    {billData.discountType === "percent"
-                      ? `${billData.discountValue}%`
+                    ₹{formatNumber(billData.discountAmount)} (
+                    {formatNumber(billData.discountType) === "percent"
+                      ? `${formatNumber(billData.discountValue)}%`
                       : "Flat"}
                     )
                   </td>
@@ -264,7 +270,7 @@ export default function GstPreview() {
                     TOTAL:
                   </td>
                   <td>
-                    <b>₹{billData.grandTotal.toFixed(2)}</b>
+                    <b>₹{formatNumber(billData.grandTotal)}</b>
                   </td>
                 </tr>
 

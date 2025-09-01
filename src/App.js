@@ -21,6 +21,7 @@ import GstViewBill from './components/GstViewBill';
 import ProductPage from "./ProductPage";
 import Loader from "./Loader";
 import Setting from "./Setting";
+import GstEditBill from './components/GstEditBill';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/view-bill/:id" element={<ViewBill />} />
         <Route path="/view-bills/:id" element={<GstViewBill />} />
         <Route path="/edit-bill/:id" element={<EditBill />} />
+        <Route path="/edit-Gst-bill/:id" element={<GstEditBill />} />
         <Route path="/Create-Gst-Bill" element={<Test2 />} />
         <Route path="/Setting" element={<Setting />} />
         <Route path="/Sample-Bill" element={<Test />} />

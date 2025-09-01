@@ -26,6 +26,9 @@ export default function Test() {
   const [unit, setUnit] = useState("");
   const [items, setItems] = useState([]);
 
+  // edit mode
+  const [editIndex, setEditIndex] = useState(null);
+
   // discount states
   const [discountType, setDiscountType] = useState("percent");
   const [discountValue, setDiscountValue] = useState(0);
@@ -58,25 +61,52 @@ export default function Test() {
     }
   };
 
-  // Items Add
+  // Add or Update Item
   const handleAddItem = () => {
     if (!itemName || !price || !qty || !unit) {
       alert("⚠️ Please fill all item fields");
       return;
     }
+
     const newItem = {
       itemName,
       price: parseFloat(price),
       qty: parseFloat(qty),
       unit,
     };
-    setItems([...items, newItem]);
+
+    if (editIndex !== null) {
+      // Update existing item
+      const updatedItems = [...items];
+      updatedItems[editIndex] = newItem;
+      setItems(updatedItems);
+      setEditIndex(null);
+    } else {
+      // Add new item
+      setItems([...items, newItem]);
+    }
 
     // reset inputs
     setItemName("");
     setPrice("");
     setQty("");
     setUnit("");
+  };
+
+  // Edit item
+  const handleEdit = (index) => {
+    const item = items[index];
+    setItemName(item.itemName);
+    setPrice(item.price);
+    setQty(item.qty);
+    setUnit(item.unit);
+    setEditIndex(index);
+  };
+
+  // Delete item
+  const handleDelete = (index) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
   };
 
   // ✅ Totals calculation
@@ -257,7 +287,7 @@ export default function Test() {
             className="btn btn-success"
             onClick={handleAddItem}
           >
-            Add Item
+            {editIndex !== null ? "Update Item" : "Add Item"}
           </button>
 
           {/* Items Table */}
@@ -270,6 +300,8 @@ export default function Test() {
                     <th>Price</th>
                     <th>Pcs</th>
                     <th>Total</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -279,6 +311,24 @@ export default function Test() {
                       <td>₹{it.price}</td>
                       <td>{it.qty}</td>
                       <td>₹{(it.price * it.qty).toFixed(2)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-warning"
+                          onClick={() => handleEdit(index)}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(index)}
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

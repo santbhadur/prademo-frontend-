@@ -10,7 +10,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
 import Main from "../page/Main";
 
-export default function Test2() {
+export default function CreateGstBill() {
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -24,6 +24,7 @@ export default function Test2() {
   const [unit, setUnit] = useState("");
   const [gst, setGst] = useState("");
   const [items, setItems] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
   const [gstType, setGstType] = useState("CGST/SGST");
 
   // discount states
@@ -38,6 +39,7 @@ export default function Test2() {
       .catch((err) => console.error("Error fetching bill number:", err));
   }, []);
 
+  // ✅ Pick contact (if supported)
   const pickContact = async () => {
     try {
       if ("contacts" in navigator && "select" in navigator.contacts) {
@@ -57,45 +59,74 @@ export default function Test2() {
     }
   };
 
+const handleAddItem = () => {
+  if (!itemName || !price || !qty || !unit || !gst) {
+    alert("Please fill all item fields including GST");
+    return;
+  }
 
-  // Add item
-  const handleAddItem = () => {
-    if (!itemName || !price || !qty || !unit || !gst) {
-      alert("Please fill all item fields including GST");
-      return;
-    }
+  const gross = parseFloat(price) * parseFloat(qty); // कुल राशि
+  const gstPercent = parseFloat(gst);
 
-    const baseTotal = parseFloat(price) * parseFloat(qty);
-    const gstAmount = (baseTotal * parseFloat(gst)) / 100;
+  // taxable निकालना (reverse GST)
+  const taxable = gross * (100 / (100 + gstPercent)); 
+  const gstAmount = gross - taxable;
 
-    const newItem = {
-      itemName,
-      price: parseFloat(price),
-      qty: parseFloat(qty),
-      unit,
-      gst: parseFloat(gst),
-      gstAmount,
-      total: baseTotal + gstAmount,
-    };
-
-    setItems([...items, newItem]);
-
-    // reset inputs
-    setItemName("");
-    setPrice("");
-    setQty("");
-    setUnit("");
-    setGst("");
+  const newItem = {
+    itemName,
+    price: parseFloat(price),
+    qty: parseFloat(qty),
+    unit,
+    gst: gstPercent,
+    taxable,
+    gstAmount,
+    total: gross,
   };
 
-  // subtotal, discount & total calculation
+  if (editIndex !== null) {
+    const updatedItems = [...items];
+    updatedItems[editIndex] = newItem;
+    setItems(updatedItems);
+    setEditIndex(null);
+  } else {
+    setItems([...items, newItem]);
+  }
+
+  // reset inputs
+  setItemName("");
+  setPrice("");
+  setQty("");
+  setUnit("");
+  setGst("");
+};
+
+  // ✅ Delete Item
+  const handleDeleteItem = (index) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
+  };
+
+  // ✅ Edit Item
+  const handleEditItem = (index) => {
+    const item = items[index];
+    setItemName(item.itemName);
+    setPrice(item.price);
+    setQty(item.qty);
+    setUnit(item.unit);
+    setGst(item.gst);
+    setEditIndex(index);
+  };
+
+  // ✅ Subtotal, Discount, GST, GrandTotal calculation
   const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
   const totalGst = items.reduce((sum, it) => sum + it.gstAmount, 0);
+
   let discountAmount =
     discountType === "percent"
       ? (subtotal * discountValue) / 100
       : discountValue;
   if (discountAmount > subtotal) discountAmount = subtotal;
+
   const grandTotal = subtotal - discountAmount + totalGst;
 
   // ✅ Submit Bill to Backend
@@ -107,14 +138,15 @@ export default function Test2() {
       return;
     }
 
-    let cgstTotal = 0, sgstTotal = 0, igstTotal = 0;
-if (gstType === "CGST/SGST") {
-  cgstTotal = totalGst / 2;
-  sgstTotal = totalGst / 2;
-} else {
-  igstTotal = totalGst;
-}
-
+    let cgstTotal = 0,
+      sgstTotal = 0,
+      igstTotal = 0;
+    if (gstType === "CGST/SGST") {
+      cgstTotal = totalGst / 2;
+      sgstTotal = totalGst / 2;
+    } else {
+      igstTotal = totalGst;
+    }
 
     const billData = {
       billNumber,
@@ -129,7 +161,7 @@ if (gstType === "CGST/SGST") {
       discountAmount,
       gstAmount: totalGst,
       grandTotal,
-       cgstTotal,
+      cgstTotal,
       sgstTotal,
       igstTotal,
     };
@@ -146,7 +178,7 @@ if (gstType === "CGST/SGST") {
 
       if (res.ok) {
         alert("GST Bill Created Successfully ✅");
-        navigate("/GstPreview", { state: { billData } }); // redirect
+        navigate("/GstPreview", { state: { billData } });
       } else {
         alert("Error creating GST Bill ❌");
       }
@@ -158,196 +190,213 @@ if (gstType === "CGST/SGST") {
 
   return (
     <>
-          <Main />
-    <div className="container test mt-3 p-3 shadow rounded bg-light">
-      <h5 className="mb-3 text-primary fw-bold">Create GST Bill</h5>
-      <form onSubmit={handleSubmit}>
-        {/* Bill Details */}
-        <div className="row mb-3">
-          <div className="col-md-4 ">
-            <Form.Group>
-              <Form.Label className="fw-bold">Bill Number</Form.Label><br></br>
-              <Form.Control type="number" value={billNumber} readOnly />
-            </Form.Group>
+      <Main />
+      <div className="container test mt-3 p-3 shadow rounded bg-light">
+        <h5 className="mb-3 text-primary fw-bold">Create GST Bill</h5>
+        <form onSubmit={handleSubmit}>
+          {/* Bill Details */}
+          <div className="row mb-3">
+            <div className="col-md-4">
+              <Form.Group>
+                <Form.Label className="fw-bold">Bill Number</Form.Label>
+                <Form.Control type="number" value={billNumber} readOnly />
+              </Form.Group>
+            </div>
+            <div className="col-md-4">
+              <Form.Group>
+                <Form.Label className="fw-bold">Bill Date</Form.Label>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    format="DD/MM/YYYY"
+                    value={value}
+                    onChange={(newValue) => setValue(newValue)}
+                  />
+                </LocalizationProvider>
+              </Form.Group>
+            </div>
           </div>
-          <div className="col-md-4">
-            <Form.Group>
-              <Form.Label className="fw-bold">Bill Date</Form.Label><br></br>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  format="DD/MM/YYYY"
-                  value={value}
-                  onChange={(newValue) => setValue(newValue)}
-                />
-              </LocalizationProvider>
-            </Form.Group>
-          </div>
-        </div>
 
-        {/* Customer */}
-        <Form.Group className="mb-3">
-          <Form.Label className="fw-bold">Customer Name</Form.Label>
-          <InputGroup>
-            <Form.Control
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-            />
-            <InputGroup.Text
-            onClick={pickContact}
-                    style={{ cursor: "pointer" }}>
-              <PersonFill />
-            </InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
+          {/* Customer Info */}
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Customer Name</Form.Label>
+            <InputGroup>
+              <Form.Control
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
+              <InputGroup.Text onClick={pickContact} style={{ cursor: "pointer" }}>
+                <PersonFill />
+              </InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label className="fw-bold">Customer Mobile</Form.Label>
-          <InputGroup>
-            <Form.Control
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-            <InputGroup.Text>
-              <TelephoneFill />
-            </InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
-        <div className="col-md-4">
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-bold">Customer Mobile</Form.Label>
+            <InputGroup>
+              <Form.Control
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              <InputGroup.Text>
+                <TelephoneFill />
+              </InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
+
+          <div className="col-md-4 mb-3">
             <Form.Label className="fw-bold">GST Type</Form.Label>
             <Form.Select value={gstType} onChange={(e) => setGstType(e.target.value)}>
-            <option value="CGST/SGST">CGST/SGST (Local customer)</option>
-            <option value="IGST">IGST (Central/outstation customer)</option>
-          </Form.Select>
-          </div>
-
-        {/* Items */}
-        <h5 className="mt-4">Add Items</h5>
-        <div className="row mb-3">
-          <div className="col-md-3">
-            <Form.Label className="fw-bold">Item Name</Form.Label>
-            <Form.Control
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-          </div>
-          <div className="col-md-2">
-            <Form.Label className="fw-bold">Price</Form.Label>
-            <Form.Control
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </div>
-          <div className="col-md-2">
-            <Form.Label className="fw-bold">Qty</Form.Label>
-            <Form.Control
-              type="number"
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-            />
-          </div>
-          <div className="col-md-2">
-            <Form.Label className="fw-bold">Unit</Form.Label>
-            <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
-              <option value="">Select Unit</option>
-              <option value="gram">Gram</option>
-              <option value="CRT">CRT</option>
-              <option value="pcs">Pcs</option>
+              <option value="CGST/SGST">CGST/SGST (Local customer)</option>
+              <option value="IGST">IGST (Central/outstation customer)</option>
             </Form.Select>
           </div>
-          <div className="col-md-2">
-            <Form.Label className="fw-bold">GST %</Form.Label>
-            <Form.Select value={gst} onChange={(e) => setGst(e.target.value)}>
-              <option value="">--Select GST--</option>
-              <option value="5">5%</option>
-              <option value="8">8%</option>
-              <option value="12">12%</option>
-              <option value="18">18%</option>
-              <option value="30">30%</option>
-            </Form.Select>
-          </div>
-        </div>
 
-        <button
-          type="button"
-          className="btn btn-success"
-          onClick={handleAddItem}
-        >
-          Add Item
-        </button>
-
-        {/* Items Table */}
-        {items.length > 0 && (
-          <>
-            <table className="table table-bordered mt-3">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Price</th>
-                  <th>Qty</th>
-                  <th>GST %</th>
-                  <th>GST Amt</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((it, idx) => (
-                  <tr key={idx}>
-                    <td>{it.itemName}</td>
-                    <td>₹{it.price}</td>
-                    <td>{it.qty}</td>
-                    <td>{it.gst}%</td>
-                    <td>₹{it.gstAmount.toFixed(2)}</td>
-                    <td>₹{it.total.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Totals */}
-            <h6>Subtotal: ₹{subtotal.toFixed(2)}</h6>
-            <h6>GST: ₹{totalGst.toFixed(2)}</h6>
-            <h6>Discount: ₹{discountAmount.toFixed(2)}</h6>
-            <h5 className="fw-bold text-success">
-              Grand Total: ₹{grandTotal.toFixed(2)}
-            </h5>
-            <div className="row mt-2">
-            <div className="col-sm-6">
-              <Form.Select
-                value={discountType}
-                onChange={(e) => setDiscountType(e.target.value)}
-              >
-                <option value="percent">Discount %</option>
-                
-              </Form.Select>  
-            </div>
-            <div className="col-sm-6">
+          {/* Items */}
+          <h5 className="mt-4">Add Items</h5>
+          <div className="row mb-3">
+            <div className="col-md-3">
+              <Form.Label className="fw-bold">Item Name</Form.Label>
               <Form.Control
-                type="number"
-                placeholder="Enter Discount"
-                value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value)}
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
               />
             </div>
+            <div className="col-md-2">
+              <Form.Label className="fw-bold">Price</Form.Label>
+              <Form.Control
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <Form.Label className="fw-bold">Qty</Form.Label>
+              <Form.Control
+                type="number"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <Form.Label className="fw-bold">Unit</Form.Label>
+              <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
+                <option value="">Select Unit</option>
+                <option value="gram">Gram</option>
+                <option value="CRT">CRT</option>
+                <option value="pcs">Pcs</option>
+              </Form.Select>
+            </div>
+            <div className="col-md-2">
+              <Form.Label className="fw-bold">GST %</Form.Label>
+              <Form.Select value={gst} onChange={(e) => setGst(e.target.value)}>
+                <option value="">--Select GST--</option>
+                <option value="5">5%</option>
+                <option value="8">8%</option>
+                <option value="12">12%</option>
+                <option value="18">18%</option>
+                <option value="30">30%</option>
+              </Form.Select>
+            </div>
           </div>
-          <h6 className="mt-2">Discount: ₹{discountAmount.toFixed(2)}</h6>
-          <h5 className="fw-bold text-success">
-            Grand Total: ₹{grandTotal.toFixed(2)}
-          </h5>
-        
-             <div>
-          <button type="submit" className="btn btn-primary mt-3">
-            Submit
-          </button>
-        </div>
-          </>
-        )}
 
-       
-      </form>
-    </div>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={handleAddItem}
+          >
+            {editIndex !== null ? "Update Item" : "Add Item"}
+          </button>
+
+          {/* Items Table */}
+          {items.length > 0 && (
+            <>
+              <table className="table table-bordered mt-3">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Taxable</th>
+                    <th>GST %</th>
+                    <th>GST Amt</th>
+                    <th>Total</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((it, idx) => (
+                    <tr key={idx}>
+                      <td>{it.itemName}</td>
+                      <td>₹{it.price}</td>
+                      <td>{it.qty}</td>
+                      <td>₹{it.taxable.toFixed(2)}</td>
+                      <td>{it.gst}%</td>
+                      <td>₹{it.gstAmount.toFixed(2)}</td>
+                      <td>₹{it.total.toFixed(2)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-warning btn-sm"
+                          onClick={() => handleEditItem(idx)}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteItem(idx)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Totals */}
+              <h6>Subtotal: ₹{subtotal.toFixed(2)}</h6>
+              <h6>GST: ₹{totalGst.toFixed(2)}</h6>
+              <h6>Discount: ₹{discountAmount.toFixed(2)}</h6>
+              <h5 className="fw-bold text-success">
+                Grand Total: ₹{grandTotal.toFixed(2)}
+              </h5>
+
+              {/* Discount Section */}
+              <div className="row mt-2">
+                <div className="col-sm-6">
+                  <Form.Select
+                    value={discountType}
+                    onChange={(e) => setDiscountType(e.target.value)}
+                  >
+                    <option value="percent">Discount %</option>
+                    
+                  </Form.Select>
+                </div>
+                <div className="col-sm-6">
+                  <Form.Control
+                    type="number"
+                    placeholder="Enter Discount"
+                    value={discountValue}
+                    onChange={(e) => setDiscountValue(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button type="submit" className="btn btn-primary mt-3">
+                  Submit
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      </div>
     </>
   );
 }

@@ -7,6 +7,7 @@ export default function GstViewBill() {
   const { id } = useParams();
   const [bill, setBill] = useState(null);
   const [logoUrl, setLogoUrl] = useState("");
+
  useEffect(() => {
        fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
      .then((res) => res.json())
@@ -19,6 +20,13 @@ export default function GstViewBill() {
      .catch((err) => console.error("Error fetching logo:", err));
    
      }, []);
+
+     // 🔹 Helper Function (decimal format fix)
+const formatNumber = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return "";
+  return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
+};
+
 
   // Date formatting helper
   const formatDate = (dateString) => {
@@ -138,23 +146,23 @@ export default function GstViewBill() {
                     <td style={{ border: "1px solid black", padding: "8px" }}>{it.itemName}</td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>123456</td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
-                      {it.qty.toFixed(2)}
+                      {formatNumber(it.qty)}
                     </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.price.toFixed(2)}</td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(it.price)}</td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       ₹{(it.price * it.qty)}
                     </td>
                     {bill.gstType === "CGST/SGST" ? (
                       <>
-                        <td style={{ border: "1px solid black", padding: "8px" }}>₹{sgst.toFixed(2)}</td>
-                        <td style={{ border: "1px solid black", padding: "8px" }}>₹{cgst.toFixed(2)}</td>
+                        <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(cgst)}</td>
+                        <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(sgst)}</td>
                       </>
                     ) : (
                       <td colSpan="2" style={{ border: "1px solid black", padding: "8px" }}>
                         ₹{igst.toFixed(2)}
                       </td>
                     )}
-                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.total}</td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(it.total)}</td>
                   </tr>
                 );
               })}
@@ -167,7 +175,7 @@ export default function GstViewBill() {
                 >
                   <b>Sub Total:</b>
                 </td>
-                <td style={{ border: "1px solid black", padding: "8px" }}>₹{bill.subtotal.toFixed(2)}</td>
+                <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(bill.subtotal)}</td>
               </tr>
 
               {bill.gstType === "CGST/SGST" ? (
@@ -179,7 +187,7 @@ export default function GstViewBill() {
                     >
                       <b>CGST:</b>
                     </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{bill.cgstTotal.toFixed(2)}</td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(bill.cgstTotal)}</td>
                   </tr>
                   <tr>
                     <td
@@ -188,7 +196,7 @@ export default function GstViewBill() {
                     >
                       <b>SGST:</b>
                     </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{bill.sgstTotal.toFixed(2)}</td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(bill.sgstTotal)}</td>
                   </tr>
                 </>
               ) : (
@@ -199,7 +207,7 @@ export default function GstViewBill() {
                   >
                     <b>IGST:</b>
                   </td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{bill.igstTotal.toFixed(2)}</td>
+                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{formatNumber(bill.igstTotal)}</td>
                 </tr>
               )}
 
@@ -211,8 +219,8 @@ export default function GstViewBill() {
                   <b>Discount:</b>
                 </td>
                 <td style={{ border: "1px solid black", padding: "8px" }}>
-                  ₹{bill.discountAmount.toFixed(2)} (
-                  {bill.discountType === "percent" ? `${bill.discountValue}%` : "Flat"})
+                  ₹{formatNumber(bill.discountAmount)} (
+                  {bill.discountType === "percent" ? `${formatNumber(bill.discountValue)}%` : "Flat"})
                 </td>
               </tr>
               <tr>
@@ -223,7 +231,7 @@ export default function GstViewBill() {
                   <b>TOTAL AMOUNT:</b>
                 </td>
                 <td style={{ border: "1px solid black", padding: "8px" }}>
-                  <b>₹{bill.grandTotal.toFixed(2)}</b>
+                  <b>₹{formatNumber(bill.grandTotal)}</b>
                 </td>
               </tr>
 
