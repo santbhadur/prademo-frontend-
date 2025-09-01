@@ -231,8 +231,7 @@ export default function SharePdf() {
           </table>
           <h4 className="text-center mt-3">Thank you</h4>
         </div>
-
-        <div className="d-flex flex-wrap gap-2 mt-3">
+                   <div className="d-flex flex-wrap gap-2 mt-3">
           <button className="btn btn-success" onClick={handleShare}>
             📤 Share WhatsApp
           </button>
@@ -243,7 +242,9 @@ export default function SharePdf() {
             ⬇️ Download
           </button>
         </div>
+        
       </div>
+     
     </>
   );
 }
