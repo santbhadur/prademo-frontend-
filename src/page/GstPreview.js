@@ -1,8 +1,7 @@
-import React, { useRef, useState, useEffect } from "react"; // <-- useState & useEffect import
+import React, { useRef, useState, useEffect } from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios"; // <-- axios import
-import defaultLogo from "../Images/logo1.jpeg"; // <-- fallback logo import
+import defaultLogo from "../Images/logo1.jpeg";
 import Main from "../page/Main";
 
 export default function GstPreview() {
@@ -10,22 +9,19 @@ export default function GstPreview() {
   const location = useLocation();
   const navigate = useNavigate();
   const billData = location.state?.billData;
-   const [logoUrl, setLogoUrl] = useState("");
- 
-      useEffect(() => {
-            fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("API Response:", data);  // ✅ ये डालकर देख
-            if (data.url) {
-              setLogoUrl(data.url);
-            }
-          })
-          .catch((err) => console.error("Error fetching logo:", err));
-        
-          }, []);
+  const [logoUrl, setLogoUrl] = useState("");
 
-
+  useEffect(() => {
+    fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("API Response:", data);
+        if (data.url) {
+          setLogoUrl(data.url);
+        }
+      })
+      .catch((err) => console.error("Error fetching logo:", err));
+  }, []);
 
   if (!billData) {
     return (
@@ -38,7 +34,6 @@ export default function GstPreview() {
     );
   }
 
-   // ✅ Download PDF
   const handleDownload = () => {
     const element = contentRef.current;
     const opt = {
@@ -49,10 +44,9 @@ export default function GstPreview() {
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
     };
 
-    html2pdf().set(opt).from(element).save(); // directly download karega
+    html2pdf().set(opt).from(element).save();
   };
 
-   // ✅ Print PDF
   const handlePrint = () => {
     const element = contentRef.current;
     const opt = {
@@ -72,10 +66,9 @@ export default function GstPreview() {
         iframe.style.display = "none";
         iframe.src = url;
         document.body.appendChild(iframe);
-        iframe.contentWindow.print(); // ✅ directly print dialog khulega
+        iframe.contentWindow.print();
       });
   };
-
 
   const handleShare = async () => {
     try {
@@ -117,186 +110,190 @@ export default function GstPreview() {
 
   return (
     <>
-              <Main />
-    <div className="container test m-2">
-      <div ref={contentRef}>
-        <table style={{ borderCollapse: "collapse", width: "100%" }}>
-          <tbody>
-            {/* Header */}
-            <tr>
-              <td colSpan="10" style={{ border: "1px solid black", padding: "10px" }}>
-                <h4 className="text-center">Invoice</h4>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <img src={ defaultLogo}  alt="Company Logo" style={{ height:"80px", marginRight: "10px"}} />
-
-
-                  <div style={{ fontSize: "14px" }}>
-                    <h4 className="mb-0">Shree Bhagti Bhandar Gem Stone</h4>
-                    <p className="mb-0">
-                      142 Exculess shopping space, Bhimrad Althan, Surat Gujarat 395017
-                    </p>
-                    <p className="mb-0">Mobile: 9054498684</p>
-                    <p className="mb-0">GSTIN: __________________</p>
-                  </div>
-                </div>
-              </td>
-            </tr>
-
-            {/* Bill Info */}
-            <tr>
-              <td colSpan="5" style={{ border: "1px solid black", paddingLeft: "8px" }}>
-                <h6>Bill Details</h6>
-              </td>
-              <td colSpan="5" style={{ border: "1px solid black", paddingLeft: "8px" }}>
-                <h6>Bill To</h6>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="5" style={{ border: "1px solid black", padding: "8px" }}>
-                <p className="mb-0">Bill No: {billData.billNumber}</p>
-                <p className="mb-0">Bill Date: {billData.billDate}</p>
-                <p className="mb-0">Bill Type: {billData.gstType}</p>
-              </td>
-              <td colSpan="5" style={{ border: "1px solid black", padding: "8px" }}>
-                <p className="mb-0">Customer Name: {billData.customerName}</p>
-                <p>Mobile: {billData.phoneNumber}</p>
-              </td>
-            </tr>
-
-            {/* Table Headers */}
-            <tr>
-              <th style={{ border: "1px solid black", padding: "8px" }}>No</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Item Name</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>HSN/SAC</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Qty</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Rate</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Taxable Value</th>
-              {billData.gstType === "CGST/SGST" ? (
-                <>
-                  <th style={{ border: "1px solid black", padding: "8px" }}>CGST</th>
-                  <th style={{ border: "1px solid black", padding: "8px" }}>SGST</th>
-                </>
-              ) : (
-                <th colSpan="2" style={{ border: "1px solid black", padding: "8px" }}>
-                  IGST
-                </th>
-              )}
-              <th style={{ border: "1px solid black", padding: "8px" }}>Amount</th>
-            </tr>
-
-            {/* Items */}
-            {billData.items.map((it, idx) => {
-              let sgst = 0,
-                cgst = 0,
-                igst = 0;
-              if (billData.gstType === "CGST/SGST") {
-                sgst = (it.gstAmount / 2).toFixed(2);
-                cgst = (it.gstAmount / 2).toFixed(2);
-              } else {
-                igst = it.gstAmount.toFixed(2);
-              }
-
-              return (
-                <tr key={idx}>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>{idx + 1}</td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>{it.itemName}</td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>123456</td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>
-                    {it.qty} {it.unit}
+      <Main />
+      <div className="container test mt-3">
+        <div ref={contentRef} className="invoice-container">
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <tbody>
+                {/* Header */}
+                <tr>
+                  <td colSpan="10" className="p-2">
+                    <h4 className="text-center">Invoice</h4>
+                    <div className="d-flex align-items-center flex-wrap">
+                      <img
+                        src={ defaultLogo}
+                        alt="Company Logo"
+                        style={{ height: "70px", marginRight: "10px" }}
+                      />
+                      <div style={{ fontSize: "14px" }}>
+                        <h5 className="mb-0">Shree Bhagti Bhandar Gem Stone</h5>
+                        <p className="mb-0">
+                          142 Exculess shopping space, Bhimrad Althan, Surat
+                          Gujarat 395017
+                        </p>
+                        <p className="mb-0">Mobile: 9054498684</p>
+                        <p className="mb-0">GSTIN: __________________</p>
+                      </div>
+                    </div>
                   </td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.price}</td>
-                  <td style={{ border: "1px solid black", padding: "8px" }}>
-                    ₹{(it.price * it.qty).toFixed(2)}
+                </tr>
+
+                {/* Bill Info */}
+                <tr>
+                  <td colSpan="5" className="p-2">
+                    <h6>Bill Details</h6>
                   </td>
+                  <td colSpan="5" className="p-2">
+                    <h6>Bill To</h6>
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan="5" className="p-2">
+                    <p className="mb-0">Bill No: {billData.billNumber}</p>
+                    <p className="mb-0">Bill Date: {billData.billDate}</p>
+                    <p className="mb-0">Bill Type: {billData.gstType}</p>
+                  </td>
+                  <td colSpan="5" className="p-2">
+                    <p className="mb-0">Customer: {billData.customerName}</p>
+                    <p>Mobile: {billData.phoneNumber}</p>
+                  </td>
+                </tr>
+
+                {/* Table Headers */}
+                <tr>
+                  <th>No</th>
+                  <th>Item Name</th>
+                  <th>HSN/SAC</th>
+                  <th>Qty</th>
+                  <th>Rate</th>
+                  <th>Taxable</th>
                   {billData.gstType === "CGST/SGST" ? (
                     <>
-                      <td style={{ border: "1px solid black", padding: "8px" }}>₹ {sgst}</td>
-                      <td style={{ border: "1px solid black", padding: "8px" }}>₹ {cgst}</td>
+                      <th>CGST</th>
+                      <th>SGST</th>
                     </>
                   ) : (
-                    <td colSpan="2" style={{ border: "1px solid black", padding: "8px" }}>
-                      ₹{Number(igst).toFixed(2)}
-                    </td>
+                    <th colSpan="2">IGST</th>
                   )}
-                  <td style={{ border: "1px solid black", padding: "8px" }}>₹{it.total.toFixed(2)}</td>
+                  <th>Amount</th>
                 </tr>
-              );
-            })}
 
-            {/* Totals */}
-            <tr>
-              <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-                <b>Sub Total:</b>
-              </td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.subtotal.toFixed(2)}</td>
-            </tr>
+                {/* Items */}
+                {billData.items.map((it, idx) => {
+                  let sgst = 0,
+                    cgst = 0,
+                    igst = 0;
+                  if (billData.gstType === "CGST/SGST") {
+                    sgst = (it.gstAmount / 2).toFixed(2);
+                    cgst = (it.gstAmount / 2).toFixed(2);
+                  } else {
+                    igst = it.gstAmount.toFixed(2);
+                  }
 
-           {billData.gstType === "CGST/SGST" ? (
-  <>
-    <tr>
-      <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-        <b>CGST:</b>
-      </td>
-      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.cgstTotal.toFixed(2)}</td>
-    </tr>
-    <tr>
-      <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-        <b>SGST:</b>
-      </td>
-      <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.sgstTotal.toFixed(2)}</td>
-    </tr>
-  </>
-) : (
-  <tr>
-    <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-      <b>IGST:</b>
-    </td>
-    <td style={{ border: "1px solid black", padding: "8px" }}>₹{billData.igstTotal.toFixed(2)}</td>
-  </tr>
-)}
+                  return (
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      <td>{it.itemName}</td>
+                      <td>123456</td>
+                      <td>
+                        {it.qty} {it.unit}
+                      </td>
+                      <td>₹{it.price}</td>
+                      <td>₹{(it.price * it.qty).toFixed(2)}</td>
+                      {billData.gstType === "CGST/SGST" ? (
+                        <>
+                          <td>₹{sgst}</td>
+                          <td>₹{cgst}</td>
+                        </>
+                      ) : (
+                        <td colSpan="2">₹{Number(igst).toFixed(2)}</td>
+                      )}
+                      <td>₹{it.total.toFixed(2)}</td>
+                    </tr>
+                  );
+                })}
 
-            <tr>
-              <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-                <b>Discount:</b>
-              </td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>
-                ₹{billData.discountAmount.toFixed(2)} (
-                {billData.discountType === "percent" ? `${billData.discountValue}%` : "Flat"})
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="8" style={{ textAlign: "right", border: "1px solid black", padding: "8px" }}>
-                <b>TOTAL AMOUNT:</b>
-              </td>
-              <td style={{ border: "1px solid black", padding: "8px" }}>
-                <b>₹{billData.grandTotal.toFixed(2)}</b>
-              </td>
-            </tr>
+                {/* Totals */}
+                <tr>
+                  <td colSpan="8" className="text-end fw-bold">
+                    Sub Total:
+                  </td>
+                  <td>₹{billData.subtotal.toFixed(2)}</td>
+                </tr>
 
-            {/* Signature */}
-            <tr>
-              <td colSpan="5" style={{ border: "1px solid black" }}></td>
-              <td colSpan="5" style={{ textAlign: "center", border: "1px solid black" }}>
-                
-                
-                <p>Authorized Signatory</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h4 className="text-center mt-3">Thank you</h4>
+                {billData.gstType === "CGST/SGST" ? (
+                  <>
+                    <tr>
+                      <td colSpan="8" className="text-end fw-bold">
+                        CGST:
+                      </td>
+                      <td>₹{billData.cgstTotal.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="8" className="text-end fw-bold">
+                        SGST:
+                      </td>
+                      <td>₹{billData.sgstTotal.toFixed(2)}</td>
+                    </tr>
+                  </>
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="text-end fw-bold">
+                      IGST:
+                    </td>
+                    <td>₹{billData.igstTotal.toFixed(2)}</td>
+                  </tr>
+                )}
+
+                <tr>
+                  <td colSpan="8" className="text-end fw-bold">
+                    Discount:
+                  </td>
+                  <td>
+                    ₹{billData.discountAmount.toFixed(2)} (
+                    {billData.discountType === "percent"
+                      ? `${billData.discountValue}%`
+                      : "Flat"}
+                    )
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colSpan="8" className="text-end fw-bold">
+                    TOTAL:
+                  </td>
+                  <td>
+                    <b>₹{billData.grandTotal.toFixed(2)}</b>
+                  </td>
+                </tr>
+
+                {/* Signature */}
+                <tr>
+                  <td colSpan="5"></td>
+                  <td colSpan="5" className="text-center">
+                    <p>Authorized Signatory</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 className="text-center mt-3">Thank you</h5>
+        </div>
+
+        {/* Buttons */}
+        <div className="d-flex flex-wrap gap-2 mt-3">
+          <button className="btn btn-success" onClick={handleShare}>
+            📤 Share WhatsApp
+          </button>
+          <button className="btn btn-primary" onClick={handlePrint}>
+            🖨️ Print
+          </button>
+          <button className="btn btn-danger" onClick={handleDownload}>
+            ⬇️ Download
+          </button>
+        </div>
       </div>
-
-      <button className="btn btn-success mt-3 ml-2" onClick={handleShare}>
-        📤 Share WhatsApp
-      </button>
-        <button className="btn btn-primary mt-3 ml-2" onClick={handlePrint}>
-        🖨️ Print
-      </button>
-      <button className="btn btn-danger mt-3 ml-2" onClick={handleDownload}>
-        ⬇️ Download
-      </button>
-    </div>
     </>
   );
 }

@@ -51,6 +51,26 @@ body, * {
   background-color: #0b57d0; /* Royal Blue */
   padding: 10px 20px;
 }
+/* Har ek table ke liye black border */
+.invoice-container table,
+.invoice-container th,
+.invoice-container td {
+  border: 1px solid black !important;
+  color: black; /* text bhi black */
+}
+
+/* Table ko collapse karke ekdum clean look */
+.invoice-container table {
+  border-collapse: collapse !important;
+}
+
+/* Mobile ke liye chhota font */
+@media (max-width: 768px) {
+  .invoice-container table {
+    font-size: 12px;
+  }
+}
+
 
 /* Sidebar */
 .custom-sidebar {

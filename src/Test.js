@@ -246,7 +246,7 @@ export default function Test() {
               <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
                 <option value="">Select Unit</option>
                 <option value="gram">Gram</option>
-                <option value="kg">Kg</option>
+                <option value="CRT">CRT</option>
                 <option value="pcs">Pcs</option>
               </Form.Select>
             </div>

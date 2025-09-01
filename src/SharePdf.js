@@ -35,6 +35,43 @@ export default function SharePdf() {
     );
   }
 
+  const handleDownload = () => {
+      const element = contentRef.current;
+      const opt = {
+        margin: 0.5,
+        filename: "BhagtiBhandar.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: { scale: 3 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      };
+  
+      html2pdf().set(opt).from(element).save();
+    };
+  
+    const handlePrint = () => {
+      const element = contentRef.current;
+      const opt = {
+        margin: 0.5,
+        filename: "BhagtiBhandar.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: { scale: 3 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      };
+  
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .outputPdf("bloburl")
+        .then((url) => {
+          const iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          iframe.src = url;
+          document.body.appendChild(iframe);
+          iframe.contentWindow.print();
+        });
+    };
+  
+
   // ✅ PDF Share/Download function
   const handleShare = async () => {
     try {
@@ -195,9 +232,17 @@ export default function SharePdf() {
           <h4 className="text-center mt-3">Thank you</h4>
         </div>
 
-        <button className="btn btn-success mt-3" onClick={handleShare}>
-          📤 Share / Download PDF
-        </button>
+        <div className="d-flex flex-wrap gap-2 mt-3">
+          <button className="btn btn-success" onClick={handleShare}>
+            📤 Share WhatsApp
+          </button>
+          <button className="btn btn-primary" onClick={handlePrint}>
+            🖨️ Print
+          </button>
+          <button className="btn btn-danger" onClick={handleDownload}>
+            ⬇️ Download
+          </button>
+        </div>
       </div>
     </>
   );
