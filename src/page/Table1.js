@@ -11,6 +11,11 @@ export default function Table1() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const formatNumber = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return "";
+  return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
+};
+
   // Fetch bills from backend
   useEffect(() => {
     const fetchBills = async () => {
@@ -128,7 +133,7 @@ export default function Table1() {
                         <td>{new Date(bill.billDate).toLocaleDateString()}</td>
                         <td>{bill.customerName}</td>
                         <td>{bill.phoneNumber}</td>
-                        <td>₹{bill.subtotal.toFixed(2)}</td>
+                        <td>₹{formatNumber(bill.subtotal)}</td>
                         <td><button
                           className="btn btn-sm btn-info"
                           onClick={() => navigate(`/edit-Gst-bill/${bill._id}`)}
