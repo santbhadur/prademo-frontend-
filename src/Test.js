@@ -143,7 +143,7 @@ export default function Test() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/bills",
+        "https://prademo-bankend-zojh.vercel.app/api/bills",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

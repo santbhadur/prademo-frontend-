@@ -174,7 +174,7 @@ const handleAddItem = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/billss",
+        "https://prademo-bankend-zojh.vercel.app/api/billss",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
