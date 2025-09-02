@@ -30,6 +30,10 @@ export default function CreateGstBill() {
   // discount states
   const [discountType, setDiscountType] = useState("percent");
   const [discountValue, setDiscountValue] = useState(0);
+   const [showExtra, setShowExtra] = useState(false);
+// ऊपर states में add करें
+const [address, setAddress] = useState("");
+const [gstin, setGstin] = useState("");
 
   // ✅ Fetch next GST bill number
   useEffect(() => {
@@ -118,7 +122,7 @@ const handleAddItem = () => {
   };
 
   // ✅ Subtotal, Discount, GST, GrandTotal calculation
-  const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
+  const subtotal = items.reduce((sum, it) => sum + it.taxable * it.qty, 0);
   const totalGst = items.reduce((sum, it) => sum + it.gstAmount, 0);
 
   let discountAmount =
@@ -127,7 +131,7 @@ const handleAddItem = () => {
       : discountValue;
   if (discountAmount > subtotal) discountAmount = subtotal;
 
-  const grandTotal = subtotal - discountAmount + totalGst;
+  const grandTotal = subtotal + totalGst - discountAmount;
 
   // ✅ Submit Bill to Backend
   const handleSubmit = async (e) => {
@@ -153,6 +157,8 @@ const handleAddItem = () => {
       billDate: value.format("DD/MM/YYYY"),
       customerName,
       phoneNumber,
+       address,   // ✅ नया field
+       gstin,  
       gstType,
       items,
       subtotal,
@@ -168,7 +174,7 @@ const handleAddItem = () => {
 
     try {
       const res = await fetch(
-        "https://prademo-bankend-zojh.vercel.app/api/billss",
+        "http://localhost:5000/api/billss",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -244,7 +250,43 @@ const handleAddItem = () => {
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
+          {/* Toggle Extra Customer Details */}
+          <span className="mb-0"
+            style={{ marginBottom: "5px", color: "blue", cursor: "pointer" }}
+            onClick={() => setShowExtra(!showExtra)}
+          >
+            {showExtra
+              ? "Additional Customer Details -"
+              : "Additional Customer Details +"}
+          </span>
+          {showExtra && (
+            <>
+              <Form.Group className="mb-3 mt-2">
+  <Form.Label className="fw-bold">Address</Form.Label>
+  <InputGroup>
+    <Form.Control
+      type="text"
+      placeholder="Enter address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+    />
+  </InputGroup>
+</Form.Group>
 
+<Form.Group className="mb-3">
+  <Form.Label className="fw-bold">GSTIN No</Form.Label>
+  <InputGroup>
+    <Form.Control
+      type="text"
+      placeholder="Enter Gstin No"
+      value={gstin}
+      onChange={(e) => setGstin(e.target.value)}
+    />
+  </InputGroup>
+</Form.Group>
+
+            </>
+          )}
           <div className="col-md-4 mb-3">
             <Form.Label className="fw-bold">GST Type</Form.Label>
             <Form.Select value={gstType} onChange={(e) => setGstType(e.target.value)}>
@@ -303,7 +345,7 @@ const handleAddItem = () => {
 
           <button
             type="button"
-            className="btn btn-success"
+            className="btn btn-success "
             onClick={handleAddItem}
           >
             {editIndex !== null ? "Update Item" : "Add Item"}
@@ -320,7 +362,7 @@ const handleAddItem = () => {
                     <th>Qty</th>
                     <th>Taxable</th>
                     <th>GST %</th>
-                    <th>GST Amt</th>
+                    
                     <th>Total</th>
                     <th>Edit</th>
                     <th>Delete</th>
@@ -334,7 +376,7 @@ const handleAddItem = () => {
                       <td>{it.qty}</td>
                       <td>₹{it.taxable.toFixed(2)}</td>
                       <td>{it.gst}%</td>
-                      <td>₹{it.gstAmount.toFixed(2)}</td>
+                      
                       <td>₹{it.total.toFixed(2)}</td>
                       <td>
                         <button

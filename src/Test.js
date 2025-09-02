@@ -32,6 +32,10 @@ export default function Test() {
   // discount states
   const [discountType, setDiscountType] = useState("percent");
   const [discountValue, setDiscountValue] = useState(0);
+     const [showExtra, setShowExtra] = useState(false);
+  // ऊपर states में add करें
+  const [address, setAddress] = useState("");
+  const [gstin, setGstin] = useState("");
 
   // ✅ Fetch next bill number
   useEffect(() => {
@@ -127,6 +131,8 @@ export default function Test() {
       billDate: value.format("DD/MM/YYYY"),
       customerName,
       phoneNumber,
+       address,   // ✅ नया field
+       gstin,  
       items,
       discountType,
       discountValue,
@@ -137,7 +143,7 @@ export default function Test() {
 
     try {
       const response = await fetch(
-        "https://prademo-bankend-zojh.vercel.app/api/bills",
+        "http://localhost:5000/api/bills",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -240,6 +246,43 @@ export default function Test() {
               </Form.Group>
             </div>
           </div>
+           {/* Toggle Extra Customer Details */}
+          <span className="mb-0"
+            style={{ marginBottom: "5px", color: "blue", cursor: "pointer" }}
+            onClick={() => setShowExtra(!showExtra)}
+          >
+            {showExtra
+              ? "Additional Customer Details -"
+              : "Additional Customer Details +"}
+          </span>
+          {showExtra && (
+            <>
+              <Form.Group className="mb-3 mt-2">
+  <Form.Label className="fw-bold">Address</Form.Label>
+  <InputGroup>
+    <Form.Control
+      type="text"
+      placeholder="Enter address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+    />
+  </InputGroup>
+</Form.Group>
+
+<Form.Group className="mb-3">
+  <Form.Label className="fw-bold">GSTIN No</Form.Label>
+  <InputGroup>
+    <Form.Control
+      type="text"
+      placeholder="Enter Gstin No"
+      value={gstin}
+      onChange={(e) => setGstin(e.target.value)}
+    />
+  </InputGroup>
+</Form.Group>
+
+            </>
+          )}
 
           {/* Items Section */}
           <h5 className="mt-4 text-secondary">➕ Add Items</h5>

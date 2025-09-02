@@ -62,7 +62,7 @@ export default function ViewBill() {
                       395017
                     </p>
                     <p className="mb-0">Mobile: 9054498684</p>
-                    <p className="mb-0">GSTIN: __________________</p>
+                    <p className="mb-0">GSTIN-24DENPD3296H2ZB</p>
                   </div>
                 </div>
               </td>
@@ -93,7 +93,9 @@ export default function ViewBill() {
               </td>
               <td colSpan="3" style={{ border: "1px solid black", padding: "8px" }}>
                 <p className="mb-0">Customer Name: {bill.customerName}</p>
-                <p>Mobile: {bill.phoneNumber}</p>
+                <p className="mb-0">Mobile: {bill.phoneNumber}</p>
+                 {bill.address && <p className="mb-0">Address: {bill.address}</p>}
+                    {bill.gstin && <p>GSTIN: {bill.gstin}</p>}
               </td>
             </tr>
 

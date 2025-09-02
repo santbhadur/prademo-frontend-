@@ -141,7 +141,7 @@ export default function SharePdf() {
                         395017
                       </p>
                       <p className="mb-0">Mobile: 9054498684</p>
-                      <p className="mb-0">GSTIN: __________________</p>
+                      <p className="mb-0">GSTIN-24DENPD3296H2ZB</p>
                     </div>
                   </div>
                 </td>
@@ -164,7 +164,9 @@ export default function SharePdf() {
                 </td>
                 <td colSpan="3" style={{ border: "1px solid black", padding: "8px" }}>
                   <p className="mb-0">Customer Name: {billData.customerName}</p>
-                  <p>Mobile: {billData.phoneNumber}</p>
+                  <p className="mb-0">Mobile: {billData.phoneNumber}</p>
+                  {billData.address && <p className="mb-0">Address: {billData.address}</p>}
+                    {billData.gstin && <p>GSTIN: {billData.gstin}</p>}
                 </td>
               </tr>
 

@@ -139,7 +139,7 @@ const formatNumber = (num) => {
                           Gujarat 395017
                         </p>
                         <p className="mb-0">Mobile: 9054498684</p>
-                        <p className="mb-0">GSTIN: __________________</p>
+                        <p className="mb-0">GSTIN-24DENPD3296H2ZB</p>
                       </div>
                     </div>
                   </td>
@@ -162,7 +162,9 @@ const formatNumber = (num) => {
                   </td>
                   <td colSpan="5" className="p-2">
                     <p className="mb-0">Customer: {billData.customerName}</p>
-                    <p>Mobile: {billData.phoneNumber}</p>
+                    <p className="mb-0">Mobile: {billData.phoneNumber}</p>
+                    {billData.address && <p className="mb-0">Address: {billData.address}</p>}
+                    {billData.gstin && <p>GSTIN: {billData.gstin}</p>}
                   </td>
                 </tr>
 
@@ -260,7 +262,7 @@ const formatNumber = (num) => {
                     ₹{formatNumber(billData.discountAmount)} (
                     {formatNumber(billData.discountType) === "percent"
                       ? `${formatNumber(billData.discountValue)}%`
-                      : "Flat"}
+                      : "0%"}
                     )
                   </td>
                 </tr>
