@@ -122,7 +122,7 @@ const handleAddItem = () => {
   };
 
   // ✅ Subtotal, Discount, GST, GrandTotal calculation
-  const subtotal = items.reduce((sum, it) => sum + it.taxable * it.qty, 0);
+  const subtotal = items.reduce((sum, it) => sum + it.taxable, 0);
   const totalGst = items.reduce((sum, it) => sum + it.gstAmount, 0);
 
   let discountAmount =

@@ -4,6 +4,7 @@ import Main from "../page/Main";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function Table1() {
   const [search, setSearch] = useState("");
@@ -122,7 +123,7 @@ export default function Table1() {
                     <th>Subtotal</th>
                     <th>Edit</th>
                     <th>View</th>
-                    <th>Actions</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -138,7 +139,7 @@ export default function Table1() {
                           className="btn btn-sm btn-info"
                           onClick={() => navigate(`/edit-Gst-bill/${bill._id}`)}
                         >
-                          Edit
+                          <EditIcon />
                         </button></td>
                         <td><button
                           className="btn btn-sm btn-info"
