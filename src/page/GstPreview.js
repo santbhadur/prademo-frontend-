@@ -255,17 +255,17 @@ const formatNumber = (num) => {
                 )}
 
                 <tr>
-                  <td colSpan="8" className="text-end fw-bold">
-                    Discount:
-                  </td>
-                  <td>
-                    ₹{formatNumber(billData.discountAmount)} (
-                    {formatNumber(billData.discountType) === "percent"
-                      ? `${formatNumber(billData.discountValue)}%`
-                      : "0%"}
-                    )
-                  </td>
-                </tr>
+  <td colSpan="8" className="text-end fw-bold">
+    Discount:
+  </td>
+  <td>
+    ₹{formatNumber(billData.discountAmount)}{" "}
+    ({billData.discountType === "percent"
+      ? `${billData.discountValue}%`
+      : `₹${formatNumber(billData.discountValue)}`})
+  </td>
+</tr>
+
 
                 <tr>
                   <td colSpan="8" className="text-end fw-bold">
