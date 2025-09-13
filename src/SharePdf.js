@@ -141,7 +141,7 @@ export default function SharePdf() {
                         395017
                       </p>
                       <p className="mb-0">Mobile: 9054498684</p>
-                      <p className="mb-0">GSTIN-24DENPD3296H2ZB</p>
+                      <p className="mb-0">GSTIN-</p>
                     </div>
                   </div>
                 </td>

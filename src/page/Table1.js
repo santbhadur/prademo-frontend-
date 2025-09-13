@@ -70,7 +70,23 @@ export default function Table1() {
             }}
           >
             <h2 className="mb-3 text-primary fw-bold">All GST Bills</h2>
-            <Link to="/Create-Gst-Bill">
+            <div>
+                 <Link to="/Create-Gst-Bill">
+              <button
+                style={{
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  padding: "8px 16px",
+                  cursor: "pointer",
+                  margin:"10px",
+                }}
+              >
+                + Create Bill
+              </button>
+            </Link>
+            <Link to="/Create-Gst-Bills">
               <button
                 style={{
                   backgroundColor: "#007bff",
@@ -81,9 +97,11 @@ export default function Table1() {
                   cursor: "pointer",
                 }}
               >
-                + Create Bill
+                Create Bill 18+
               </button>
             </Link>
+            </div>
+           
           </div>
 
           {/* Search bar */}

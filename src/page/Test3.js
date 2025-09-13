@@ -9,7 +9,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useNavigate } from "react-router-dom";
 import Main from "../page/Main";
-import { Link } from "react-router-dom";
 
 export default function CreateGstBill() {
   const navigate = useNavigate();
@@ -31,10 +30,11 @@ export default function CreateGstBill() {
   // discount states
   const [discountType, setDiscountType] = useState("percent");
   const [discountValue, setDiscountValue] = useState(0);
-   const [showExtra, setShowExtra] = useState(false);
-// ऊपर states में add करें
-const [address, setAddress] = useState("");
-const [gstin, setGstin] = useState("");
+
+  // extra details
+  const [showExtra, setShowExtra] = useState(false);
+  const [address, setAddress] = useState("");
+  const [gstin, setGstin] = useState("");
 
   // ✅ Fetch next GST bill number
   useEffect(() => {
@@ -64,46 +64,47 @@ const [gstin, setGstin] = useState("");
     }
   };
 
-const handleAddItem = () => {
-  if (!itemName || !price || !qty || !unit || !gst) {
-    alert("Please fill all item fields including GST");
-    return;
-  }
+  // ✅ Add or Update Item
+  const handleAddItem = () => {
+    if (!itemName || !price || !qty || !unit || !gst) {
+      alert("Please fill all item details before adding.");
+      return;
+    }
 
-  const gross = parseFloat(price) * parseFloat(qty); // कुल राशि
-  const gstPercent = parseFloat(gst);
+    const gross = parseFloat(price) * parseFloat(qty);
+    const gstPercent = parseFloat(gst);
 
-  // taxable निकालना (reverse GST)
-  const taxable = gross * (100 / (100 + gstPercent)); 
-  const gstAmount = gross - taxable;
+    const taxable = gross;
+    const gstAmount = (gross * gstPercent) / 100;
+    const total = taxable + gstAmount;
 
-  const newItem = {
-    itemName,
-    price: parseFloat(price),
-    qty: parseFloat(qty),
-    unit,
-    gst: gstPercent,
-    taxable,
-    gstAmount,
-    total: gross,
+    const newItem = {
+      itemName,
+      price: parseFloat(price),
+      qty: parseFloat(qty),
+      unit,
+      gst: gstPercent,
+      taxable,
+      gstAmount,
+      total,
+    };
+
+    if (editIndex !== null) {
+      const updatedItems = [...items];
+      updatedItems[editIndex] = newItem;
+      setItems(updatedItems);
+      setEditIndex(null);
+    } else {
+      setItems([...items, newItem]);
+    }
+
+    // reset inputs
+    setItemName("");
+    setPrice("");
+    setQty("");
+    setUnit("");
+    setGst("");
   };
-
-  if (editIndex !== null) {
-    const updatedItems = [...items];
-    updatedItems[editIndex] = newItem;
-    setItems(updatedItems);
-    setEditIndex(null);
-  } else {
-    setItems([...items, newItem]);
-  }
-
-  // reset inputs
-  setItemName("");
-  setPrice("");
-  setQty("");
-  setUnit("");
-  setGst("");
-};
 
   // ✅ Delete Item
   const handleDeleteItem = (index) => {
@@ -138,8 +139,16 @@ const handleAddItem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!customerName || !phoneNumber || items.length === 0) {
-      alert("Please fill all details and add at least 1 item.");
+    if (!customerName) {
+      alert("Please enter Customer Name.");
+      return;
+    }
+    if (!phoneNumber) {
+      alert("Please enter Customer Mobile Number.");
+      return;
+    }
+    if (items.length === 0) {
+      alert("Please add at least 1 item.");
       return;
     }
 
@@ -158,8 +167,8 @@ const handleAddItem = () => {
       billDate: value.format("DD/MM/YYYY"),
       customerName,
       phoneNumber,
-       address,   // ✅ नया field
-       gstin,  
+      address,
+      gstin,
       gstType,
       items,
       subtotal,
@@ -174,14 +183,11 @@ const handleAddItem = () => {
     };
 
     try {
-      const res = await fetch(
-        "https://prademo-bankend-zojh.vercel.app/api/billss",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(billData),
-        }
-      );
+      const res = await fetch("https://prademo-bankend-zojh.vercel.app/api/billss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(billData),
+      });
 
       if (res.ok) {
         alert("GST Bill Created Successfully ✅");
@@ -199,11 +205,7 @@ const handleAddItem = () => {
     <>
       <Main />
       <div className="container test mt-3 p-3 shadow rounded bg-light">
-        <div className="d-flex">
-            <h5 className="mb-3  text-primary fw-bold">Create GST Bill</h5>
-        
-        </div>
-        
+        <h5 className="mb-3 text-primary fw-bold">Create GST Bill </h5>
         <form onSubmit={handleSubmit}>
           {/* Bill Details */}
           <div className="row mb-3">
@@ -236,7 +238,10 @@ const handleAddItem = () => {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
               />
-              <InputGroup.Text onClick={pickContact} style={{ cursor: "pointer" }}>
+              <InputGroup.Text
+                onClick={pickContact}
+                style={{ cursor: "pointer" }}
+              >
                 <PersonFill />
               </InputGroup.Text>
             </InputGroup>
@@ -255,8 +260,10 @@ const handleAddItem = () => {
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
+
           {/* Toggle Extra Customer Details */}
-          <span className="mb-0"
+          <span
+            className="mb-0"
             style={{ marginBottom: "5px", color: "blue", cursor: "pointer" }}
             onClick={() => setShowExtra(!showExtra)}
           >
@@ -267,34 +274,37 @@ const handleAddItem = () => {
           {showExtra && (
             <>
               <Form.Group className="mb-3 mt-2">
-  <Form.Label className="fw-bold">Address</Form.Label>
-  <InputGroup>
-    <Form.Control
-      type="text"
-      placeholder="Enter address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-    />
-  </InputGroup>
-</Form.Group>
+                <Form.Label className="fw-bold">Address</Form.Label>
+                <InputGroup>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </InputGroup>
+              </Form.Group>
 
-<Form.Group className="mb-3">
-  <Form.Label className="fw-bold">GSTIN No</Form.Label>
-  <InputGroup>
-    <Form.Control
-      type="text"
-      placeholder="Enter Gstin No"
-      value={gstin}
-      onChange={(e) => setGstin(e.target.value)}
-    />
-  </InputGroup>
-</Form.Group>
-
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">GSTIN No</Form.Label>
+                <InputGroup>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter Gstin No"
+                    value={gstin}
+                    onChange={(e) => setGstin(e.target.value)}
+                  />
+                </InputGroup>
+              </Form.Group>
             </>
           )}
+
           <div className="col-md-4 mb-3">
             <Form.Label className="fw-bold">GST Type</Form.Label>
-            <Form.Select value={gstType} onChange={(e) => setGstType(e.target.value)}>
+            <Form.Select
+              value={gstType}
+              onChange={(e) => setGstType(e.target.value)}
+            >
               <option value="CGST/SGST">CGST/SGST (Local customer)</option>
               <option value="IGST">IGST (Central/outstation customer)</option>
             </Form.Select>
@@ -328,7 +338,10 @@ const handleAddItem = () => {
             </div>
             <div className="col-md-2">
               <Form.Label className="fw-bold">Unit</Form.Label>
-              <Form.Select value={unit} onChange={(e) => setUnit(e.target.value)}>
+              <Form.Select
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+              >
                 <option value="">Select Unit</option>
                 <option value="gram">Gram</option>
                 <option value="CRT">CRT</option>
@@ -350,7 +363,7 @@ const handleAddItem = () => {
 
           <button
             type="button"
-            className="btn btn-success "
+            className="btn btn-success"
             onClick={handleAddItem}
           >
             {editIndex !== null ? "Update Item" : "Add Item"}
@@ -367,7 +380,6 @@ const handleAddItem = () => {
                     <th>Qty</th>
                     <th>Taxable</th>
                     <th>GST %</th>
-                    
                     <th>Total</th>
                     <th>Edit</th>
                     <th>Delete</th>
@@ -381,7 +393,6 @@ const handleAddItem = () => {
                       <td>{it.qty}</td>
                       <td>₹{it.taxable.toFixed(2)}</td>
                       <td>{it.gst}%</td>
-                      
                       <td>₹{it.total.toFixed(2)}</td>
                       <td>
                         <button
@@ -422,7 +433,7 @@ const handleAddItem = () => {
                     onChange={(e) => setDiscountType(e.target.value)}
                   >
                     <option value="percent">Discount %</option>
-                    
+                    <option value="flat">Flat Discount</option>
                   </Form.Select>
                 </div>
                 <div className="col-sm-6">

@@ -22,6 +22,8 @@ import ProductPage from "./ProductPage";
 import Loader from "./Loader";
 import Setting from "./Setting";
 import GstEditBill from './components/GstEditBill';
+import GstPdf from './components/GstPdf';
+import Test3 from './page/Test3';
 
 function App() {
   return (
@@ -29,12 +31,14 @@ function App() {
       <Routes>
         {/* Correct way: element expects a JSX component */}
         <Route path="/" element={<Table />} />
+        <Route path="/Gst-Pdf" element={<GstPdf />} />
         <Route path="/All-Gst-Bills" element={<Table1 />} />
         <Route path="/view-bill/:id" element={<ViewBill />} />
         <Route path="/view-bills/:id" element={<GstViewBill />} />
         <Route path="/edit-bill/:id" element={<EditBill />} />
         <Route path="/edit-Gst-bill/:id" element={<GstEditBill />} />
         <Route path="/Create-Gst-Bill" element={<Test2 />} />
+        <Route path="/Create-Gst-Bills" element={<Test3 />} />
         <Route path="/Setting" element={<Setting />} />
         <Route path="/Sample-Bill" element={<Test />} />
         <Route path="/Add-Logo" element={<Logo />} />

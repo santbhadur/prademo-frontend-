@@ -13,27 +13,48 @@ export default function GstEditBill() {
   const navigate = useNavigate();
   const [bill, setBill] = useState(null);
 
-  // 🔹 Fetch Bill Data
-  useEffect(() => {
-    const fetchBill = async () => {
-      try {
-        const res = await fetch(`https://prademo-bankend-mrry.vercel.app/api/billss/${id}`);
-        const data = await res.json();
-        setBill(data);
-      } catch (err) {
-        console.error("Error fetching GST bill:", err);
-      }
-    };
-    fetchBill();
-  }, [id]);
-
-  // 🔹 Recalculate totals
+  // 🔹 Recalculate totals with CGST / SGST / IGST
   const recalculate = (billData, changedField = null) => {
-    let subtotal = billData.items?.reduce(
-      (sum, item) =>
-        sum + (Number(item.qty) || 0) * (Number(item.price) || 0),
-      0
-    );
+    let subtotal = 0;
+    let cgstTotal = 0,
+      sgstTotal = 0,
+      igstTotal = 0;
+
+    // 🔹 Items calculation
+    const items = billData.items?.map((item) => {
+      const qty = Number(item.qty) || 0;
+      const rate = Number(item.price) || 0;
+      const gstPercent = Number(item.gst ?? billData.gstPercent) || 0;
+
+      const taxable = qty * rate; // ✅ taxable amount
+      let gstAmount = (taxable * gstPercent) / 100; // ✅ GST on taxable
+
+      let cgst = 0,
+        sgst = 0,
+        igst = 0;
+
+      if (billData.gstType === "CGST/SGST") {
+        cgst = gstAmount / 2;
+        sgst = gstAmount / 2;
+        cgstTotal += cgst;
+        sgstTotal += sgst;
+      } else {
+        igst = gstAmount;
+        igstTotal += igst;
+      }
+
+      subtotal += taxable;
+
+      return {
+        ...item,
+        taxable,      // ✅ add taxable in each item
+        gstAmount,    // ✅ add gstAmount in each item
+        cgst,
+        sgst,
+        igst,
+        total: taxable + gstAmount, // gross total
+      };
+    });
 
     let discountValue = parseFloat(billData.discountValue) || 0;
     let discountAmount = parseFloat(billData.discountAmount) || 0;
@@ -45,27 +66,65 @@ export default function GstEditBill() {
       discountValue = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
     }
 
-    // 🔹 Apply GST
-    let gstPercent = parseFloat(billData.gstPercent) || 0;
-    let gstAmount = ((subtotal - discountAmount) * gstPercent) / 100;
-
-    let grandTotal = subtotal - discountAmount + gstAmount;
+    // 🔹 Grand total
+    let grandTotal =
+      subtotal - discountAmount + cgstTotal + sgstTotal + igstTotal;
 
     return {
       ...billData,
+      items,
       subtotal,
       discountValue,
       discountAmount,
-      gstPercent,
-      gstAmount,
+      cgstTotal,
+      sgstTotal,
+      igstTotal,
+      gstAmount: cgstTotal + sgstTotal + igstTotal, // ✅ total gst
       grandTotal,
     };
   };
 
+  // 🔹 Fetch Bill Data
+  useEffect(() => {
+    const fetchBill = async () => {
+      try {
+        const res = await fetch(
+          `https://prademo-bankend-zojh.vercel.app/api/billss/${id}`
+        );
+        const data = await res.json();
+
+        // 🔹 Normalize GST & Discount
+        const normalizedData = {
+          ...data,
+          gstPercent: data.gstPercent ?? data.items?.[0]?.gst ?? 0,
+          discountValue: data.discountValue ?? 0,
+          discountAmount: data.discountAmount ?? 0,
+        };
+
+        // 🔹 Pass through recalculate (update totals properly)
+        const recalculatedData = recalculate(normalizedData);
+
+        setBill(recalculatedData);
+      } catch (err) {
+        console.error("Error fetching GST bill:", err);
+      }
+    };
+    fetchBill();
+  }, [id]);
+
   // 🔹 Handle Input Change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let updatedBill = { ...bill, [name]: value };
+
+    let updatedBill = {
+      ...bill,
+      [name]:
+        name === "gstPercent" ||
+        name === "discountValue" ||
+        name === "discountAmount"
+          ? Number(value)
+          : value,
+    };
 
     if (name === "discountValue") {
       updatedBill = recalculate(updatedBill, "percent");
@@ -82,7 +141,8 @@ export default function GstEditBill() {
   const handleItemChange = (index, e) => {
     const { name, value } = e.target;
     const items = [...bill.items];
-    items[index][name] = value;
+    items[index][name] =
+      name === "qty" || name === "price" ? Number(value) : value;
 
     let updatedBill = { ...bill, items };
     updatedBill = recalculate(updatedBill);
@@ -93,14 +153,18 @@ export default function GstEditBill() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`https://prademo-bankend-mrry.vercel.app/api/billss/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bill),
-      });
+      const res = await fetch(
+        `https://prademo-bankend-zojh.vercel.app/api/billss/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bill), // ✅ full calculation save hoga
+        }
+      );
       if (res.ok) {
+        const updatedBill = await res.json(); // ✅ updated bill response
         alert("GST Bill updated successfully!");
-        navigate("/All-Gst-Bills");
+        navigate("/gst-pdf", { state: { billData: updatedBill } });
       } else {
         alert("Failed to update GST Bill");
       }
@@ -211,17 +275,50 @@ export default function GstEditBill() {
                   onChange={(e) => handleItemChange(idx, e)}
                 />
               </div>
+
+              {/* 🔹 Show Taxable + GST Amount */}
+              <div className="mb-2">
+                <label>Taxable:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formatNumber(item.taxable)}
+                  readOnly
+                />
+              </div>
+              <div className="mb-2">
+                <label>GST Amount:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={formatNumber(item.gstAmount)}
+                  readOnly
+                />
+              </div>
             </div>
           ))}
 
           {/* Tax & Discount */}
+          <div className="mb-2">
+            <label>GST Type:</label>
+            <select
+              className="form-control"
+              name="gstType"
+              value={bill.gstType || "CGST/SGST"}
+              onChange={handleChange}
+            >
+              <option value="CGST/SGST">CGST/SGST</option>
+              <option value="IGST">IGST</option>
+            </select>
+          </div>
+
           <div className="mb-2">
             <label>GST %:</label>
             <input
               type="number"
               className="form-control"
               name="gstPercent"
-              value={bill.gstPercent || ""}
+              value={bill.gstPercent ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -232,7 +329,7 @@ export default function GstEditBill() {
               type="number"
               className="form-control"
               name="discountValue"
-              value={bill.discountValue || ""}
+              value={bill.discountValue ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -243,7 +340,7 @@ export default function GstEditBill() {
               type="number"
               className="form-control"
               name="discountAmount"
-              value={bill.discountAmount || ""}
+              value={bill.discountAmount ?? ""}
               onChange={handleChange}
             />
           </div>
@@ -261,7 +358,7 @@ export default function GstEditBill() {
 
           {/* Buttons */}
           <button type="submit" className="btn btn-primary me-2">
-            Save
+            Update
           </button>
           <Link to="/gst-bills" className="btn btn-secondary">
             Cancel

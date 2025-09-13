@@ -1,45 +1,25 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef } from "react";
+import { useLocation } from "react-router-dom";
 import html2pdf from "html2pdf.js";
-import { useLocation, useNavigate } from "react-router-dom";
+import dayjs from "dayjs";  // ✅ Date formatting
 import defaultLogo from "../Images/logo1.jpeg";
 import Main from "../page/Main";
-import Logo2 from "../Images/logo2.jpeg"
+import Logo2 from "../Images/logo2.jpeg";
 
-export default function GstPreview() {
+export default function GstPdf() {
   const contentRef = useRef();
   const location = useLocation();
-  const navigate = useNavigate();
-  const billData = location.state?.billData;
-  const [logoUrl, setLogoUrl] = useState("");
+  const billData = location.state?.billData; // ✅ data from edit page
+
+  console.log(billData);
 
   // 🔹 Helper Function to format numbers
-const formatNumber = (num) => {
-  if (num === null || num === undefined || isNaN(num)) return "";
-  return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
-};
+  const formatNumber = (num) => {
+    if (num === null || num === undefined || isNaN(num)) return "";
+    return Number(num) % 1 === 0 ? String(Number(num)) : Number(num).toFixed(2);
+  };
 
-  useEffect(() => {
-    fetch("https://prademo-bankend-x6ny.vercel.app/api/logo")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("API Response:", data);
-        if (data.url) {
-          setLogoUrl(data.url);
-        }
-      })
-      .catch((err) => console.error("Error fetching logo:", err));
-  }, []);
-
-  if (!billData) {
-    return (
-      <div className="container mt-5">
-        <h3>No Bill Data Found</h3>
-        <button className="btn btn-primary" onClick={() => navigate("/")}>
-          Create New Bill
-        </button>
-      </div>
-    );
-  }
+  if (!billData) return <p>No Bill Data Found</p>;
 
   const handleDownload = () => {
     const element = contentRef.current;
@@ -77,14 +57,18 @@ const formatNumber = (num) => {
       });
   };
 
+  // ✅ PDF Share/Download function
   const handleShare = async () => {
     try {
       const element = contentRef.current;
+
       const opt = {
         margin: 0.5,
         filename: "BhagtiBhandar.pdf",
         image: { type: "jpeg", quality: 1 },
         html2canvas: { scale: 3 },
+        useCORS: true, // ✅ Allow CORS images
+        allowTaint: true,
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       };
 
@@ -129,12 +113,14 @@ const formatNumber = (num) => {
                     <h4 className="text-center">Invoice</h4>
                     <div className="d-flex align-items-center flex-wrap">
                       <img
-                        src={ defaultLogo}
+                        src={defaultLogo}
                         alt="Company Logo"
-                        style={{ height: "70px", marginRight: "10px" }}
+                        style={{ height: "90px", marginRight: "10px" }}
                       />
                       <div style={{ fontSize: "14px" }}>
-                        <h5 className="mb-0">Shree Bhagti Bhandar Gem Stone</h5>
+                        <h5 className="mb-0">
+                          Shree Bhagti Bhandar Gem Stone
+                        </h5>
                         <p className="mb-0">
                           142 Exculess shopping space, Bhimrad Althan, Surat
                           Gujarat 395017
@@ -158,13 +144,21 @@ const formatNumber = (num) => {
                 <tr>
                   <td colSpan="5" className="p-2">
                     <p className="mb-0">Bill No: {billData.billNumber}</p>
-                    <p className="mb-0">Bill Date: {billData.billDate}</p>
+                    <p className="mb-0">
+  Bill Date:{" "}
+  {billData.billDate
+    ? dayjs(billData.billDate).format("MM/DD/YYYY")
+    : ""}
+</p>
+
                     <p className="mb-0">Bill Type: {billData.gstType}</p>
                   </td>
                   <td colSpan="5" className="p-2">
                     <p className="mb-0">Customer: {billData.customerName}</p>
                     <p className="mb-0">Mobile: {billData.phoneNumber}</p>
-                    {billData.address && <p className="mb-0">Address: {billData.address}</p>}
+                    {billData.address && (
+                      <p className="mb-0">Address: {billData.address}</p>
+                    )}
                     {billData.gstin && <p>GSTIN: {billData.gstin}</p>}
                   </td>
                 </tr>
@@ -173,10 +167,10 @@ const formatNumber = (num) => {
                 <tr>
                   <th>No</th>
                   <th>Item Name</th>
-                  <th>HSN/SAC</th>
                   <th>Qty</th>
                   <th>Rate</th>
                   <th>Taxable</th>
+                  <th>GST Amt</th>
                   {billData.gstType === "CGST/SGST" ? (
                     <>
                       <th>CGST</th>
@@ -204,12 +198,12 @@ const formatNumber = (num) => {
                     <tr key={idx}>
                       <td>{idx + 1}</td>
                       <td>{it.itemName}</td>
-                      <td>123456</td>
                       <td>
                         {it.qty} {it.unit}
                       </td>
-                      <td>₹{it.price}</td>
-                      <td>₹{it.taxable?.toFixed(2)}</td>
+                      <td>₹{formatNumber(it.price)}</td>
+                      <td>₹{formatNumber(it.taxable)}</td>
+                      <td>₹{formatNumber(it.gstAmount)}</td>
                       {billData.gstType === "CGST/SGST" ? (
                         <>
                           <td>₹{sgst}</td>
@@ -256,15 +250,11 @@ const formatNumber = (num) => {
                 )}
 
                 <tr>
-  <td colSpan="8" className="text-end fw-bold">
-    Discount:
-  </td>
-  <td>
-    ₹{formatNumber(billData.discountAmount)}{" "}
-    
-  </td>
-</tr>
-
+                  <td colSpan="8" className="text-end fw-bold">
+                    Discount:
+                  </td>
+                  <td>₹{formatNumber(billData.discountAmount)}</td>
+                </tr>
 
                 <tr>
                   <td colSpan="8" className="text-end fw-bold">
@@ -280,10 +270,10 @@ const formatNumber = (num) => {
                   <td colSpan="5"></td>
                   <td colSpan="5" className="text-center">
                     <img
-                        src={ Logo2 }
-                        alt="Company Logo"
-                        style={{ height: "140px", marginRight: "10px" }}
-                      />
+                      src={Logo2}
+                      alt="Company Logo"
+                      style={{ height: "140px", marginRight: "10px" }}
+                    />
                   </td>
                 </tr>
               </tbody>
