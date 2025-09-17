@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Button from 'react-bootstrap/Button';
 
 export default function Table1() {
   const [search, setSearch] = useState("");
@@ -69,36 +70,21 @@ export default function Table1() {
               alignItems: "center",
             }}
           >
-            <h2 className="mb-3 text-primary fw-bold">All GST Bills</h2>
+            <h2 className="all mb-3 text-primary fw-bold">All GST Bills</h2>
             <div>
                  <Link to="/Create-Gst-Bill">
-              <button
-                style={{
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  margin:"10px",
-                }}
+              <Button
+                variant="primary"
               >
                 + Create Bill
-              </button>
+              </Button>
             </Link>
             <Link to="/Create-Gst-Bills">
-              <button
-                style={{
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                }}
+              <Button
+               className="m-2"
               >
                 Create Bill 18+
-              </button>
+              </Button>
             </Link>
             </div>
            

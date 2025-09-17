@@ -75,33 +75,34 @@ export default function EditBill() {
     setBill((prev) => recalculate({ ...prev, items: updatedItems }));
   };
 
-  // 🔹 Submit update
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const payload = {
-      ...bill,
-      discountValue: parseFloat(bill.discountValue),
-      discountAmount: parseFloat(bill.discountAmount),
-      subtotal: parseFloat(bill.subtotal),
-      grandTotal: parseFloat(bill.grandTotal),
-    };
-
-    const res = await fetch(
-      `https://prademo-bankend-zojh.vercel.app/api/bills/${id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (res.ok) {
-      alert("✅ Bill updated successfully");
-      navigate(`/`);
-    } else {
-      alert("❌ Error updating bill");
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const payload = {
+    ...bill,
+    discountValue: parseFloat(bill.discountValue),
+    discountAmount: parseFloat(bill.discountAmount),
+    subtotal: parseFloat(bill.subtotal),
+    grandTotal: parseFloat(bill.grandTotal),
   };
+
+  const res = await fetch(
+    `https://prademo-bankend-zojh.vercel.app/api/bills/${id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (res.ok) {
+    alert("✅ Bill updated successfully");
+    console.log(res);
+    // Backend se response lene ki jagah payload bhej dete hain
+    navigate("/sample-pdf", { state: { billData: payload } });
+  } else {
+    alert("❌ Error updating bill");
+  }
+};
 
   if (!bill) return <p>Loading bill...</p>;
 

@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import html2pdf from "html2pdf.js";
 import { useLocation, useNavigate } from "react-router-dom";
-import Main from "./page/Main";
-import defaultLogo from "./Images/logo1.jpeg"// ✅ Default image
+import Main from "../page/Main";
+import dayjs from "dayjs";
+import defaultLogo from "../Images/logo1.jpeg"// ✅ Default image
+import Logo2 from "../Images/logo2.jpeg";
 
-export default function SharePdf() {
+export default function SamplePdf() {
   const contentRef = useRef();
   const location = useLocation();
   const navigate = useNavigate();
@@ -159,7 +161,9 @@ export default function SharePdf() {
               <tr>
                 <td colSpan="3" style={{ border: "1px solid black", padding: "8px" }}>
                   <p className="mb-0">Bill No: {billData.billNumber}</p>
-                  <p className="mb-0">Bill Date: {billData.billDate}</p>
+                  <p className="mb-0">Bill Date:  {billData.billDate
+                      ? dayjs(billData.billDate).format("MM/DD/YYYY")
+                      : ""}</p>
                   <p className="mb-0">Bill type</p>
                 </td>
                 <td colSpan="3" style={{ border: "1px solid black", padding: "8px" }}>
@@ -207,6 +211,7 @@ export default function SharePdf() {
                 </td>
                 <td style={{ border: "1px solid black", paddingLeft: "8px" }}>
                   ₹{billData.discountAmount} 
+                 
                 </td>
               </tr>
               <tr>
@@ -222,7 +227,11 @@ export default function SharePdf() {
               <tr>
                 <td colSpan="3" style={{ border: "1px solid black" }}></td>
                 <td colSpan="2" style={{ textAlign: "center", border: "1px solid black" }}>
-                  <p>Authorized Signatory</p>
+                 <img
+                      src={Logo2}
+                      alt="Company Logo"
+                      style={{ height: "140px", marginRight: "10px" }}
+                    />
                 </td>
               </tr>
             </tbody>

@@ -170,19 +170,31 @@ body, * {
   
 }
 }
-@media (max-width: 460px) {
-
+@media (max-width: 580px) {
 .text{
-  font-size:12px;
+  font-size:18px;
   font-weight:bold;
 }
+
+}
+@media (max-width: 460px) {
+
+.all{
+  font-size:18px;
+}
+
 .Details
 {
   font-size:14px;
   font-weight:bold;
 }
 }
+@media (max-width: 420px) {
 
+.text{
+  font-size:16px;
+}
+}
 
 .tableContainer {
   max-height: 400px; /* ~8 rows height */

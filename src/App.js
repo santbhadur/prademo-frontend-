@@ -24,7 +24,7 @@ import Setting from "./Setting";
 import GstEditBill from './components/GstEditBill';
 import GstPdf from './components/GstPdf';
 import Test3 from './page/Test3';
-
+import SamplePdf from './components/SamplePdf';
 function App() {
   return (
     <>
@@ -35,6 +35,7 @@ function App() {
         <Route path="/All-Gst-Bills" element={<Table1 />} />
         <Route path="/view-bill/:id" element={<ViewBill />} />
         <Route path="/view-bills/:id" element={<GstViewBill />} />
+        <Route path="/sample-pdf" element={<SamplePdf />} />
         <Route path="/edit-bill/:id" element={<EditBill />} />
         <Route path="/edit-Gst-bill/:id" element={<GstEditBill />} />
         <Route path="/Create-Gst-Bill" element={<Test2 />} />
